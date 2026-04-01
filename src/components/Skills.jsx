@@ -22,7 +22,6 @@ const Skills = () => {
         { name: "Node.js", level: 90 },
         { name: "Express.js", level: 88 },
         { name: "RESTful APIs", level: 95 },
-        { name: "Linux", level: 80 },
       ]
     },
     {
@@ -40,6 +39,7 @@ const Skills = () => {
       skills: [
         { name: "Git / GitHub", level: 95 },
         { name: "Postman", level: 80 },
+        { name: "Mongo Shell", level: 70 },
         { name: "Jasmine and Karma", level: 75 },
       ]
     }
@@ -96,7 +96,7 @@ const Skills = () => {
         </div>
 
         <div className="skills-tags-cloud reveal active">
-          {["MongoDB", "Express", "Angular", "Node.js", "MySql", "TypeScript", "JavaScript", "REST", "Firebase"].map((tag, i) => (
+          {["MongoDB", "Express", "Angular", "Linux", "Node.js", "MySql", "TypeScript", "JavaScript", "REST", "Firebase"].map((tag, i) => (
             <span key={tag} className="skill-tag">{tag}</span>
           ))}
         </div>
