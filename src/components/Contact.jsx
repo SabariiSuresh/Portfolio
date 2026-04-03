@@ -5,7 +5,7 @@ import { FaGithub, FaLinkedin, FaInstagram } from 'react-icons/fa';
 import './Contact.css';
 
 const Contact = () => {
-  const [status, setStatus] = useState(null); // null, 'loading', 'success', 'error'
+  const [status, setStatus] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -67,7 +67,7 @@ const Contact = () => {
                   <div className="icon-box"><Mail size={20} /></div>
                   <div>
                     <p className="label">Email Me</p>
-                    <p className="value">sabarisuresh65@gmail.com</p>
+                    <p className="value-mail" onClick={() => window.location.href = 'mailto:sabarisuresh65@gmail.com'}>sabarisuresh65@gmail.com</p>
                   </div>
                 </div>
                 <div className="method">
@@ -81,7 +81,7 @@ const Contact = () => {
                   <div className="icon-box"><Phone size={20} /></div>
                   <div>
                     <p className="label">Call Me</p>
-                    <p className="value">+91 7012573584</p>
+                    <p className="value-phone" onClick={() => window.location.href = 'tel:+917012573584'}>+91 7012573584</p>
                   </div>
                 </div>
               </div>

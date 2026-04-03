@@ -15,12 +15,12 @@ const About = () => {
     }
   }, [isInView, controls]);
 
-  // const stats = [
-  //   { label: "Projects Completed", value: "20+" },
-  //   { label: "Success Rate", value: "100%" },
-  //   { label: "Years Experience", value: "2+" },
-  //   { label: "Happy Clients", value: "10+" },
-  // ];
+  const stats = [
+    { label: "Projects Completed", value: "10+" },
+    { label: "Commitment & Consistency", value: "100%" },
+    { label: "Internship Experience", value: "3 Months" },
+    { label: "Modern Tech Stack", value: "8+" },
+  ];
 
   return (
     <section className="about section-padding" id="about" ref={ref}>
@@ -51,22 +51,21 @@ const About = () => {
           className="about-content"
         >
           <h4 className="section-subtitle">ABOUT ME</h4>
+
           <h2 className="section-title">
-            Passionate Software Engineer <br />
-            Based in <span className="text-gradient">India</span>
+            Full Stack<span className="text-gradient"> Developer</span>
           </h2>
 
           <p className="about-description">
-            I am a highly skilled Software Engineer with a primary focus on the <strong>MEAN Stack</strong>.
-            I specialize in crafting robust, scalable, and user-centric web applications that provide
-            seamless digital experiences. My approach combines technical excellence with creative
-            problem-solving to deliver high-quality code.
+            I am Sabari Suresh, a Full Stack Developer specializing in the MEAN stack, focused on building scalable and high-performance web applications.
+            With a 3-Month internship and 10+ projects, I have hands-on experience in full-stack development, API design, and responsive UI.
+            Strong in SQL and problem-solving, I write clean, maintainable code following modern best practices.
           </p>
 
           <div className="about-info-grid">
             <div className="info-item">
               <Mail size={18} color="var(--accent-red)" />
-              <span>sabarisuresh65@gmail.com</span>
+              <span className='mail-link' onClick={() => window.location.href = 'mailto:sabarisuresh65@gmail.com'}>sabarisuresh65@gmail.com</span>
             </div>
             <div className="info-item">
               <MapPin size={18} color="var(--accent-red)" />
@@ -81,26 +80,26 @@ const About = () => {
           <div className="about-bullets">
             <div className="bullet">
               <CheckCircle2 color="var(--accent-red)" size={20} />
-              <span>Full-Stack Development Expertise</span>
+              <span>Full-Stack Application Development</span>
             </div>
             <div className="bullet">
               <CheckCircle2 color="var(--accent-red)" size={20} />
-              <span>Frontend Specialist (Angular)</span>
+              <span>Modern Frontend Development (Angular)</span>
             </div>
             <div className="bullet">
               <CheckCircle2 color="var(--accent-red)" size={20} />
-              <span>Scalable Backend Systems (Node.js)</span>
+              <span>Scalable Backend Architecture (Node.js)</span>
             </div>
           </div>
 
-          {/* <div className="about-stats-grid">
+          <div className="about-stats-grid">
             {stats.map((stat, i) => (
               <div key={stat.label} className="stat-card glass-card">
                 <h3>{stat.value}</h3>
                 <p>{stat.label}</p>
               </div>
             ))}
-          </div> */}
+          </div>
         </motion.div>
       </div>
     </section>

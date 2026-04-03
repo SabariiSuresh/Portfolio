@@ -49,11 +49,10 @@ const Skills = () => {
     <section className="skills section-padding" id="skills">
       <div className="container">
         <div className="skills-header">
-          <h4 className="section-subtitle">EXPERT IN MEAN STACK</h4>
+          <h4 className="section-subtitle">CORE COMPETENCIS</h4>
           <h2 className="section-title">Technical <span className="text-gradient">Proficiency</span></h2>
           <p className="skills-desc">
-            A comprehensive set of tools and technologies I use to bring complex ideas to life,
-            focusing on performance, scalability, and modern best practices.
+            A versatile set of tools and technologies I leverage to develop scalable, high-performance web applications aligned with modern industry standards.
           </p>
         </div>
 
@@ -96,7 +95,7 @@ const Skills = () => {
         </div>
 
         <div className="skills-tags-cloud reveal active">
-          {["MongoDB", "Express", "Angular", "Linux", "Node.js", "MySql", "TypeScript", "JavaScript", "REST", "Firebase"].map((tag, i) => (
+          {["React", "Express", "Tailwind CSS", "Linux", "Node.js", "MySql", "TypeScript", "JSON Server", "REST APIs"].map((tag, i) => (
             <span key={tag} className="skill-tag">{tag}</span>
           ))}
         </div>

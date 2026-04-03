@@ -76,9 +76,36 @@
   margin: 0;
 }
 
+.method .value-mail {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  cursor: pointer;
+}
+
+.method .value-mail:hover {
+  color:rgb(124, 123, 123);
+  text-decoration: none;
+}
+
+.method .value-phone {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  cursor: pointer;
+}
+
+.method .value-phone:hover {
+  color:rgb(124, 123, 123);
+  text-decoration: none;
+}
+
 .contact-socials {
   display: flex;
   gap: 1rem;
+  justify-content: left;
 }
 
 .social-btn {

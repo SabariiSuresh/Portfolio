@@ -107,6 +107,18 @@
   gap: 1rem;
 }
 
+.mail-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  cursor:pointer
+}
+
+.mail-link:hover {
+  color: var(--accent-red);
+  text-decoration: none;
+}
+
 .stat-card {
   padding: 1.5rem 1rem;
   text-align: center;
