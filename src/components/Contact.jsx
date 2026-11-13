@@ -59,7 +59,7 @@ const Contact = () => {
             className="contact-info"
           >
             <div className="contact-card glass-card">
-              <h3>Connect Me</h3>
+              <h3>Connect With Me</h3>
               <p>I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.</p>
 
               <div className="contact-methods">
