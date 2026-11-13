@@ -76,6 +76,7 @@
 }
 
 .method .icon-box {
+  min-width: 50px; 
   width: 50px;
   height: 50px;
   background: var(--accent-red-muted);
@@ -84,6 +85,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0; 
+}
+
+.method div:not(.icon-box) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .method .label {
@@ -95,25 +103,22 @@
   margin-bottom: 0.3rem;
 }
 
-.method .value {
-  font-size: 1.1rem;
+.method .value,
+.method .value-mail,
+.method .value-phone {
+  font-size: 0.95rem;
   font-weight: 600;
   color: #fff;
   margin: 0;
+  word-break: break-all; 
 }
 
-.method .value-mail {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-  cursor: pointer;
-}
-
-.method .value-mail:hover {
-  color:rgb(124, 123, 123);
+.method .value-mail:hover,
+.method .value-phone:hover {
+  color: rgb(124, 123, 123);
   text-decoration: none;
 }
+
 
 .method .value-phone {
   font-size: 1.1rem;
