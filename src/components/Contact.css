@@ -47,7 +47,7 @@
 .contact-section {
   width: 100%;
   max-width: 100%;
-  padding: 2rem 1rem; /* സൈഡുകളിൽ ഒരൽപ്പം ഗ്യാപ് നൽകാൻ */
+  padding: 1.5rem 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -57,8 +57,8 @@
 .contact-form, 
 .contact-info {
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
+  max-width: 100%; 
+  margin: 0;
 }
 
 .contact-form input,
@@ -297,16 +297,22 @@
   margin-bottom: 1rem;
 }
 
+
 @media (max-width: 991px) {
   .contact-wrapper {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
-    margin-bottom: 3rem;
+    width: 100%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
   }
 
   .contact-card, 
   .contact-form {
-    padding: 1.5rem; 
+    width: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
   }
 
   .contact-form, 
