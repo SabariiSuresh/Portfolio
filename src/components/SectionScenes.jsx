@@ -49,9 +49,11 @@ export const WaveGrid = () => {
     camera.position.set(0, 4.2, 10);
     camera.lookAt(0, 0, 0);
 
-    const cols = 100;
-    const rows = 56;
-    const gap = 0.32;
+    /* a lighter lattice on small screens keeps the wave smooth */
+    const small = window.innerWidth < 768;
+    const cols = small ? 56 : 80;
+    const rows = small ? 30 : 44;
+    const gap = small ? 0.6 : 0.4;
     const count = cols * rows;
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
@@ -92,7 +94,7 @@ export const WaveGrid = () => {
         geo.attributes.color.needsUpdate = true;
       },
     };
-  }, { fov: 55, z: 10 });
+  }, { fov: 55, z: 10, maxPixelRatio: 1, fps: 30 });
 
   return <div ref={ref} className="three-fill" />;
 };

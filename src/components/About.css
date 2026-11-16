@@ -1,7 +1,23 @@
-.about-head { margin-bottom: 4rem; }
+.ab { position: relative; z-index: 2; background: var(--bg); overflow: clip; }
 
-/* paragraph that lights up word by word */
-.about-head { text-align: center; margin-bottom: 3rem; }
-.about-head .section-title { display: flex; justify-content: center; }
-.about-lead { max-width: 980px; margin: 0 auto; text-align: center; font-family: var(--font-heading); font-size: clamp(1.4rem, 2.5vw, 2.2rem); line-height: 1.5; letter-spacing: -0.5px; font-weight: 600; }
-.lit-word { display: inline; }
+.ab-stage { min-height: 62svh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4rem 1.4rem 2rem; }
+.ab-headline {
+  perspective: 1000px; font-family: var(--font-heading); font-weight: 800; text-transform: uppercase; letter-spacing: -0.04em; line-height: 0.95;
+  font-size: clamp(1.5rem, 7.2vw, 6.4rem); color: #fff;
+}
+.ab-line { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 0.04em 0; }
+.ab-wordwrap { display: inline-block; white-space: nowrap; margin: 0 0.12em; max-width: 100%; }
+.ab-wordwrap.is-dim { color: rgba(255, 255, 255, 0.45); }
+.ab-wordwrap.is-hl { color: var(--accent); }
+.ab-stack { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.ab-letter { display: inline-block; will-change: transform; transform-origin: 50% 100%; }
+
+.ab-body { max-width: 56rem; margin: 0 auto; padding: 2rem 1.4rem 4rem; text-align: center; }
+.ab-bio { font-size: clamp(1.1rem, 2.4vw, 2.1rem); font-weight: 400; line-height: 1.45; letter-spacing: -0.01em; color: #fff; user-select: text; }
+.ab-word { display: inline-block; margin-right: 0.28em; will-change: opacity; }
+
+@media (max-width: 700px) {
+  .ab-stage { min-height: 50svh; padding: 5.5rem 1rem 1.5rem; }
+  .ab-headline { font-size: 6.9vw; }
+  .ab-body { padding-bottom: 2.5rem; }
+}

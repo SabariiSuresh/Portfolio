@@ -1,129 +1,81 @@
 import React, { useRef } from 'react';
-import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
-import { ArrowUpRight, Download } from 'lucide-react';
-import { Link } from 'react-scroll';
-import { Magnetic } from './Animations';
-import { HeroGlobe } from './Lazy';
-import heroPhoto from '../assets/me-new.png';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import Link from './ScrollLink';
+import heroPhoto from '../assets/me-new.webp';
 import './Hero.css';
 
-const EASE = [0.16, 1, 0.3, 1];
-const RESUME = 'https://drive.google.com/file/d/1FZVECtlgDd7GsdTKtOE5W6oslzuyePnT/view?usp=sharing';
-const LEAD = 'MEAN stack developer building scalable, high-performance web apps with clean, tested code.';
-const TAGS = [
-  { label: 'Angular', className: 'hg-tag-a' },
-  { label: 'Node.js', className: 'hg-tag-b' },
-  { label: 'MongoDB', className: 'hg-tag-c' },
-  { label: 'Express', className: 'hg-tag-d' },
+const EASE = [0.22, 1, 0.36, 1];
+const HEADLINE = ['MEAN STACK', 'BUILT TO SCALE.'];
+const CHIPS = [
+  { label: 'MEAN STACK', to: 'about' },
+  { label: 'ANGULAR / NODE', to: 'skills' },
+  { label: 'MONGODB / SQL', to: 'projects' },
 ];
 
-/* fixed scatter offsets per letter (no randomness at render time) */
-const scatter = (i, seed) => ({
-  x: (((i * 53 + seed * 17) % 11) - 5) * 46,
-  y: (((i * 37 + seed * 29) % 9) - 4) * 58,
-  r: (((i * 29 + seed * 7) % 13) - 6) * 22,
-});
-
-/* a letter that flies in from a scattered position and snaps into place */
-const Letter = ({ ch, i, seed, delay }) => {
-  const s = scatter(i, seed);
-  return (
-    <motion.span
-      className="hg-letter"
-      initial={{ x: s.x, y: s.y, rotate: s.r, opacity: 0, scale: 0.4 }}
-      animate={{ x: 0, y: 0, rotate: 0, opacity: 1, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 90, damping: 13, delay: delay + i * 0.06 }}
-      whileHover={{ y: -10, scale: 1.1, transition: { type: 'spring', stiffness: 400, damping: 12 } }}
-    >
-      {ch}
-    </motion.span>
-  );
-};
-
-const Word = ({ text, seed, delay }) => (
-  <span className="hg-word" aria-hidden="true">
-    {text.split('').map((ch, i) => <Letter key={i} ch={ch} i={i} seed={seed} delay={delay} />)}
-  </span>
+/* a block that drifts in from the side while fading up */
+const Reveal = ({ children, delay = 0, drift = 'left', className = '' }) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, x: drift === 'left' ? -46 : 46, y: 14 }}
+    animate={{ opacity: 1, x: 0, y: 0 }}
+    transition={{ duration: 0.95, delay, ease: EASE }}
+  >
+    {children}
+  </motion.div>
 );
 
 const Hero = () => {
   const ref = useRef(null);
-  const mx = useSpring(useMotionValue(0), { stiffness: 80, damping: 16 });
-  const my = useSpring(useMotionValue(0), { stiffness: 80, damping: 16 });
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, 70]);
-  const copyOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.1]);
-  const orbY = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const photoX = useTransform(mx, (v) => v * -18);
-  const photoY = useTransform(my, (v) => v * -12);
-  const tagX = useTransform(mx, (v) => v * 22);
-
-  const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
-  const onLeave = () => { mx.set(0); my.set(0); };
+  const headX = useTransform(scrollYProgress, [0, 1], ['0vw', '-10vw']);
+  const nameX = useTransform(scrollYProgress, [0, 1], ['0vw', '10vw']);
+  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <section ref={ref} className="hero hg" id="home" onMouseMove={onMove} onMouseLeave={onLeave}>
-      <div className="container hg-grid">
-        {/* ---------- copy ---------- */}
-        <motion.div className="hg-copy" style={{ y: copyY, opacity: copyOpacity }}>
-          <motion.p className="hg-hello" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
-            <i /> Hi, I&apos;m
-          </motion.p>
-
-          <h1 className="hg-name" aria-label="Sabari Suresh">
-            <Word text="SABARI" seed={1} delay={0.2} />
-            <Word text="SURESH" seed={2} delay={0.6} />
-          </h1>
-
-          <motion.p className="hg-role" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.3 }}>
-            Full-Stack Developer <span>/</span> MEAN Stack
-          </motion.p>
-
-          <motion.p className="hg-lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.4 }}>
-            {LEAD}
-          </motion.p>
-
-          <motion.div className="hg-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.55 }}>
-            <Magnetic strength={0.2}>
-              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hg-btn hg-btn-primary">
-                View Projects <ArrowUpRight size={19} />
-              </Link>
-            </Magnetic>
-            <Magnetic strength={0.2}>
-              <a href={RESUME} target="_blank" rel="noreferrer" className="hg-btn hg-btn-outline">
-                <Download size={18} /> Resume
-              </a>
-            </Magnetic>
-          </motion.div>
-        </motion.div>
-
-        {/* ---------- 3D globe with the portrait inside ---------- */}
-        <motion.div className="hg-orb-wrap" style={{ y: orbY }}>
-          <motion.div className="hg-orb" initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.3, delay: 0.3, ease: EASE }}>
-            <div className="hg-canvas"><HeroGlobe /></div>
-
-            <motion.div className="hg-photo" style={{ x: photoX, y: photoY }} initial={{ clipPath: 'circle(0% at 50% 50%)' }} animate={{ clipPath: 'circle(50% at 50% 50%)' }} transition={{ duration: 1.2, delay: 0.9, ease: EASE }}>
-              <img src={heroPhoto} alt="Sabari Suresh" />
-            </motion.div>
-            <span className="hg-photo-ring" aria-hidden="true" />
-
-            {TAGS.map((t, i) => (
-              <motion.span key={t.label} className={`hg-tag ${t.className}`} style={{ x: tagX }} initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 160, damping: 12, delay: 1.6 + i * 0.12 }}>
-                <span className="hg-tag-in" style={{ animationDelay: `${i * -1.1}s` }}>{t.label}</span>
+    <section ref={ref} className="hz" id="home">
+      {/* top left: glowing headline + chips */}
+      <motion.div className="hz-top" style={{ x: headX, opacity: fade }}>
+        <h1 className="hz-headline" aria-label="MEAN stack built to scale.">
+          {HEADLINE.map((line, i) => (
+            <Reveal key={line} drift="left" delay={0.2 + i * 0.14} className="hz-line">
+              <span aria-hidden="true">{line}</span>
+            </Reveal>
+          ))}
+        </h1>
+        <Reveal drift="left" delay={0.5}>
+          <div className="hz-chips">
+            {CHIPS.map((c, i) => (
+              <motion.span key={c.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.55 + i * 0.1, ease: EASE }}>
+                <Link to={c.to} offset={-90} className="hz-chip">{c.label}</Link>
               </motion.span>
             ))}
-          </motion.div>
-        </motion.div>
-      </div>
-
-      <motion.div className="hg-scroll" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} aria-hidden="true">
-        <span className="hg-mouse"><i /></span> Scroll
+          </div>
+        </Reveal>
       </motion.div>
+
+      {/* small portrait with a scanning line */}
+      <motion.div className="hz-portrait" style={{ opacity: fade }} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, delay: 0.7, ease: EASE }}>
+        <i className="hz-tick hz-t1" /><i className="hz-tick hz-t2" /><i className="hz-tick hz-t3" /><i className="hz-tick hz-t4" />
+        <div className="hz-photo">
+          <motion.img src={heroPhoto} alt="Sabari Suresh" initial={{ clipPath: 'inset(100% 0 0 0)' }} animate={{ clipPath: 'inset(0% 0 0 0)' }} transition={{ duration: 1.2, delay: 1, ease: EASE }} />
+          <span className="hz-scan" />
+        </div>
+      </motion.div>
+
+      {/* bottom right: role + the big name */}
+      <motion.div className="hz-bottom" style={{ x: nameX, opacity: fade }}>
+        <Reveal drift="right" delay={0.85}>
+          <p className="hz-role">MEAN STACK DEVELOPER · OPEN TO WORK</p>
+        </Reveal>
+        <motion.div className="hz-name" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.9, ease: EASE }}>
+          SABARI
+        </motion.div>
+        <Reveal drift="right" delay={1.1}>
+          <p className="hz-sub">SURESH · FULL-STACK DEVELOPER</p>
+        </Reveal>
+      </motion.div>
+
+      <div className="hz-cue" aria-hidden="true"><span><i /></span> SCROLL</div>
     </section>
   );
 };

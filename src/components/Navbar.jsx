@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { FaGithub, FaLinkedin, FaInstagram } from 'react-icons/fa';
-import { Link } from 'react-scroll';
+import Link from './ScrollLink';
 import './Navbar.css';
 
 const navLinks = [
@@ -45,7 +45,7 @@ const Navbar = () => {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="topnav-bar">
-          <Link to="home" smooth duration={400} className="topnav-logo">
+          <Link to="home" className="topnav-logo">
             <span className="logo-mark">SS</span>
             <span className="logo-text">
               <strong>Sabari Suresh</strong>
@@ -58,9 +58,7 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.to}
-                smooth="easeInOutQuart"
-                duration={400}
-                spy
+                    spy
                 offset={-90}
                 onSetActive={() => setActive(link.to)}
                 className={`topnav-link ${active === link.to ? 'is-active' : ''}`}
@@ -74,7 +72,7 @@ const Navbar = () => {
           </nav>
 
           <div className="topnav-right">
-            <Link to="contact" smooth="easeInOutQuart" duration={400} offset={-90} className="topnav-cta">
+            <Link to="contact" offset={-90} className="topnav-cta">
               Let's Connect <ArrowUpRight size={18} />
             </Link>
             <button className="topnav-toggle" onClick={() => setIsOpen(!isOpen)} aria-label="Menu">
@@ -95,7 +93,7 @@ const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.08 * i }}
                 >
-                  <Link to={link.to} smooth duration={400} offset={-90} onClick={() => setIsOpen(false)}>
+                  <Link to={link.to} offset={-90} onClick={() => setIsOpen(false)}>
                     <span>0{i + 1}</span> {link.name}
                   </Link>
                 </motion.li>

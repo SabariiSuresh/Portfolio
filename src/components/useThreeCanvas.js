@@ -5,7 +5,7 @@ import * as THREE from 'three';
  * Shared Three.js boilerplate: renderer, resize, mouse, visibility pause, cleanup.
  * setup({ THREE, scene, camera, renderer, mount }) -> { update(t, mouse, scroll), resize(w, h), dispose() }
  */
-export function useThreeCanvas(setup, { fov = 45, z = 8, ortho = false } = {}) {
+export function useThreeCanvas(setup, { fov = 45, z = 8, ortho = false, maxPixelRatio = 1.5, fps = 60 } = {}) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function useThreeCanvas(setup, { fov = 45, z = 8, ortho = false } = {}) {
     if (!ortho) camera.position.z = z;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
 
@@ -59,12 +59,16 @@ export function useThreeCanvas(setup, { fov = 45, z = 8, ortho = false } = {}) {
       if (api.update) api.update(clock.getElapsedTime(), mouse, scroll);
       renderer.render(scene, camera);
     };
-    const tick = () => {
+    const minGap = 1000 / fps - 2;
+    let lastDraw = 0;
+    const tick = (now) => {
       raf = requestAnimationFrame(tick);
-      if (visible) frame();
+      if (!visible || now - lastDraw < minGap) return;
+      lastDraw = now;
+      frame();
     };
     if (reduceMotion) frame();
-    else tick();
+    else raf = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(raf);
