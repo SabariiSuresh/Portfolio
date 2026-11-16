@@ -1,158 +1,129 @@
-import React, { useRef, useState } from 'react';
-import { motion, useScroll, useSpring, useTransform, useVelocity, useMotionValue } from 'framer-motion';
-import { ArrowUpRight, Download, Hand } from 'lucide-react';
-import { FaAngular, FaNodeJs } from 'react-icons/fa';
-import { SiMongodb, SiExpress } from 'react-icons/si';
+import React, { useRef } from 'react';
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
+import { ArrowUpRight, Download } from 'lucide-react';
 import { Link } from 'react-scroll';
 import { Magnetic } from './Animations';
+import { HeroGlobe } from './Lazy';
 import heroPhoto from '../assets/me-new.png';
 import './Hero.css';
 
+const EASE = [0.16, 1, 0.3, 1];
 const RESUME = 'https://drive.google.com/file/d/1FZVECtlgDd7GsdTKtOE5W6oslzuyePnT/view?usp=sharing';
 const LEAD = 'MEAN stack developer building scalable, high-performance web apps with clean, tested code.';
-const BAND = 'FULL-STACK ✦ MEAN STACK ✦ DEVELOPER ✦ ANGULAR ✦ NODE.JS ✦ MONGODB ✦ ';
-
-const stickers = [
-  { icon: FaAngular, className: 'hm-st-a', rotate: -12 },
-  { icon: FaNodeJs, className: 'hm-st-b', rotate: 10 },
-  { icon: SiMongodb, className: 'hm-st-c', rotate: -6 },
-  { icon: SiExpress, className: 'hm-st-d', rotate: 14 },
+const TAGS = [
+  { label: 'Angular', className: 'hg-tag-a' },
+  { label: 'Node.js', className: 'hg-tag-b' },
+  { label: 'MongoDB', className: 'hg-tag-c' },
+  { label: 'Express', className: 'hg-tag-d' },
 ];
 
-/* a letter that drops in with a bounce and squashes like jelly when hovered */
-const Jelly = ({ ch, i, delay }) => (
-  <motion.span
-    className="hm-letter"
-    initial={{ y: -220, opacity: 0, rotate: -18 }}
-    animate={{ y: 0, opacity: 1, rotate: 0 }}
-    transition={{ type: 'spring', stiffness: 130, damping: 11, delay: delay + i * 0.07 }}
-    whileHover={{ scaleY: 1.18, scaleX: 0.9, y: -6, transition: { type: 'spring', stiffness: 500, damping: 8 } }}
-  >
-    {ch}
-  </motion.span>
-);
+/* fixed scatter offsets per letter (no randomness at render time) */
+const scatter = (i, seed) => ({
+  x: (((i * 53 + seed * 17) % 11) - 5) * 46,
+  y: (((i * 37 + seed * 29) % 9) - 4) * 58,
+  r: (((i * 29 + seed * 7) % 13) - 6) * 22,
+});
 
-const Word = ({ text, delay }) => (
-  <span className="hm-word" aria-hidden="true">
-    {text.split('').map((ch, i) => <Jelly key={i} ch={ch} i={i} delay={delay} />)}
+/* a letter that flies in from a scattered position and snaps into place */
+const Letter = ({ ch, i, seed, delay }) => {
+  const s = scatter(i, seed);
+  return (
+    <motion.span
+      className="hg-letter"
+      initial={{ x: s.x, y: s.y, rotate: s.r, opacity: 0, scale: 0.4 }}
+      animate={{ x: 0, y: 0, rotate: 0, opacity: 1, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 90, damping: 13, delay: delay + i * 0.06 }}
+      whileHover={{ y: -10, scale: 1.1, transition: { type: 'spring', stiffness: 400, damping: 12 } }}
+    >
+      {ch}
+    </motion.span>
+  );
+};
+
+const Word = ({ text, seed, delay }) => (
+  <span className="hg-word" aria-hidden="true">
+    {text.split('').map((ch, i) => <Letter key={i} ch={ch} i={i} seed={seed} delay={delay} />)}
   </span>
 );
 
-/* a draggable sticker that tilts as you pull it */
-function Sticker({ icon: Icon, className, rotate, area, delay }) {
-  const x = useMotionValue(0);
-  const tilt = useTransform(x, [-120, 120], [rotate - 18, rotate + 18]);
-  return (
-    <motion.span
-      className={`hm-sticker ${className}`}
-      drag
-      dragConstraints={area}
-      dragElastic={0.25}
-      style={{ x, rotate: tilt }}
-      initial={{ opacity: 0, scale: 0, rotate }}
-      animate={{ opacity: 1, scale: 1, rotate }}
-      transition={{ type: 'spring', stiffness: 200, damping: 12, delay }}
-      whileHover={{ scale: 1.15 }}
-      whileDrag={{ scale: 1.25, cursor: 'grabbing' }}
-    >
-      <Icon />
-    </motion.span>
-  );
-}
-
 const Hero = () => {
   const ref = useRef(null);
-  const area = useRef(null);
-  const [dragged, setDragged] = useState(false);
-
-  /* the background bands lean with how fast you scroll */
+  const mx = useSpring(useMotionValue(0), { stiffness: 80, damping: 16 });
+  const my = useSpring(useMotionValue(0), { stiffness: 80, damping: 16 });
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const { scrollY: pageY } = useScroll();
-  const velocity = useSpring(useVelocity(pageY), { damping: 50, stiffness: 400 });
-  const skew = useTransform(velocity, [-2000, 2000], [-14, 14]);
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, 60]);
-  const rightY = useTransform(scrollYProgress, [0, 1], [0, -70]);
 
-  const px = useMotionValue(0);
-  const polaroidTilt = useTransform(px, [-160, 160], [-10, 14]);
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, 70]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.1]);
+  const orbY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const photoX = useTransform(mx, (v) => v * -18);
+  const photoY = useTransform(my, (v) => v * -12);
+  const tagX = useTransform(mx, (v) => v * 22);
+
+  const onMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width - 0.5);
+    my.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const onLeave = () => { mx.set(0); my.set(0); };
 
   return (
-    <section ref={ref} className="hero hm" id="home">
-      {/* ---------- scrolling type bands ---------- */}
-      <motion.div className="hm-bands" style={{ skewX: skew }} aria-hidden="true">
-        {[0, 1, 2].map((row) => (
-          <div key={row} className={`hm-row hm-row-${row}`}>
-            {[0, 1].map((k) => <span key={k} className="hm-band">{BAND.repeat(3)}</span>)}
-          </div>
-        ))}
-      </motion.div>
-
-      <div className="container hm-grid">
+    <section ref={ref} className="hero hg" id="home" onMouseMove={onMove} onMouseLeave={onLeave}>
+      <div className="container hg-grid">
         {/* ---------- copy ---------- */}
-        <motion.div className="hm-copy" style={{ y: copyY }}>
-          <motion.p className="hm-hello" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
-            <span className="hm-wave"><Hand size={22} /></span> Hello, I&apos;m
+        <motion.div className="hg-copy" style={{ y: copyY, opacity: copyOpacity }}>
+          <motion.p className="hg-hello" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+            <i /> Hi, I&apos;m
           </motion.p>
 
-          <h1 className="hm-name" aria-label="Sabari Suresh">
-            <Word text="SABARI" delay={0.2} />
-            <Word text="SURESH" delay={0.55} />
+          <h1 className="hg-name" aria-label="Sabari Suresh">
+            <Word text="SABARI" seed={1} delay={0.2} />
+            <Word text="SURESH" seed={2} delay={0.6} />
           </h1>
 
-          <motion.p className="hm-role" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>
-            <span>Full-Stack Developer</span>
-            <motion.i initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.9, delay: 1.5 }} />
+          <motion.p className="hg-role" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.3 }}>
+            Full-Stack Developer <span>/</span> MEAN Stack
           </motion.p>
 
-          <motion.p className="hm-lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.3 }}>
+          <motion.p className="hg-lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.4 }}>
             {LEAD}
           </motion.p>
 
-          <motion.div className="hm-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.45 }}>
+          <motion.div className="hg-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.55 }}>
             <Magnetic strength={0.2}>
-              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hm-btn hm-btn-primary">
+              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hg-btn hg-btn-primary">
                 View Projects <ArrowUpRight size={19} />
               </Link>
             </Magnetic>
             <Magnetic strength={0.2}>
-              <a href={RESUME} target="_blank" rel="noreferrer" className="hm-btn hm-btn-outline">
+              <a href={RESUME} target="_blank" rel="noreferrer" className="hg-btn hg-btn-outline">
                 <Download size={18} /> Resume
               </a>
             </Magnetic>
           </motion.div>
         </motion.div>
 
-        {/* ---------- draggable polaroid + stickers ---------- */}
-        <motion.div className="hm-right" style={{ y: rightY }}>
-          <div ref={area} className="hm-area">
-            <motion.figure
-              className="hm-polaroid"
-              drag
-              dragConstraints={area}
-              dragElastic={0.2}
-              onDragStart={() => setDragged(true)}
-              style={{ x: px, rotate: polaroidTilt }}
-              initial={{ y: -520, rotate: 18, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 70, damping: 11, delay: 0.5 }}
-              whileHover={{ scale: 1.04 }}
-              whileDrag={{ scale: 1.08, cursor: 'grabbing' }}
-            >
-              <span className="hm-tape" />
-              <div className="hm-photo">
-                <img src={heroPhoto} alt="Sabari Suresh" draggable={false} />
-              </div>
-              <figcaption>it&apos;s me, Sabari ✌</figcaption>
-            </motion.figure>
+        {/* ---------- 3D globe with the portrait inside ---------- */}
+        <motion.div className="hg-orb-wrap" style={{ y: orbY }}>
+          <motion.div className="hg-orb" initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.3, delay: 0.3, ease: EASE }}>
+            <div className="hg-canvas"><HeroGlobe /></div>
 
-            {stickers.map((s, i) => <Sticker key={s.className} {...s} area={area} delay={1.4 + i * 0.15} />)}
+            <motion.div className="hg-photo" style={{ x: photoX, y: photoY }} initial={{ clipPath: 'circle(0% at 50% 50%)' }} animate={{ clipPath: 'circle(50% at 50% 50%)' }} transition={{ duration: 1.2, delay: 0.9, ease: EASE }}>
+              <img src={heroPhoto} alt="Sabari Suresh" />
+            </motion.div>
+            <span className="hg-photo-ring" aria-hidden="true" />
 
-            <motion.p className="hm-hint" initial={{ opacity: 0 }} animate={{ opacity: dragged ? 0 : 1 }} transition={{ delay: dragged ? 0 : 2.2 }}>
-              drag me around ↗
-            </motion.p>
-          </div>
+            {TAGS.map((t, i) => (
+              <motion.span key={t.label} className={`hg-tag ${t.className}`} style={{ x: tagX }} initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 160, damping: 12, delay: 1.6 + i * 0.12 }}>
+                <span className="hg-tag-in" style={{ animationDelay: `${i * -1.1}s` }}>{t.label}</span>
+              </motion.span>
+            ))}
+          </motion.div>
         </motion.div>
       </div>
+
+      <motion.div className="hg-scroll" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} aria-hidden="true">
+        <span className="hg-mouse"><i /></span> Scroll
+      </motion.div>
     </section>
   );
 };

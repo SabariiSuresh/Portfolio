@@ -96,3 +96,82 @@ export const WaveGrid = () => {
 
   return <div ref={ref} className="three-fill" />;
 };
+
+/* Hero: a breathing particle globe ringed by orbiting dots; follows the pointer and swells on scroll */
+export const HeroGlobe = () => {
+  const ref = useThreeCanvas(({ THREE, scene }) => {
+    const group = new THREE.Group();
+    scene.add(group);
+
+    /* sphere of points on a Fibonacci lattice */
+    const N = 2200;
+    const R = 2.15;
+    const base = new Float32Array(N * 3);
+    const pos = new Float32Array(N * 3);
+    const col = new Float32Array(N * 3);
+    const golden = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
+      const th = golden * i;
+      base[i * 3] = Math.cos(th) * r;
+      base[i * 3 + 1] = y;
+      base[i * 3 + 2] = Math.sin(th) * r;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    group.add(new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.04, vertexColors: true, transparent: true, opacity: 0.95 })));
+
+    /* tilted orbit rings, each with a dot riding it */
+    const rings = [];
+    [[2.9, 1.2, 0.2], [3.25, -0.5, 0.9]].forEach(([radius, tx, tz], k) => {
+      const pts = [];
+      for (let i = 0; i <= 160; i++) { const a = (i / 160) * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius)); }
+      const holder = new THREE.Group();
+      holder.rotation.set(tx, 0, tz);
+      holder.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: WHITE, transparent: true, opacity: 0.22 })));
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), new THREE.MeshBasicMaterial({ color: k === 0 ? ACCENT : WHITE }));
+      holder.add(dot);
+      group.add(holder);
+      rings.push({ holder, dot, radius, speed: k === 0 ? 0.7 : -0.5 });
+    });
+
+    const accent = new THREE.Color(ACCENT);
+    const white = new THREE.Color(WHITE);
+    const grey = new THREE.Color(0x4a4a4e);
+    const tmp = new THREE.Color();
+
+    return {
+      update: (t, mouse, scroll) => {
+        for (let i = 0; i < N; i++) {
+          const bx = base[i * 3];
+          const by = base[i * 3 + 1];
+          const bz = base[i * 3 + 2];
+          const wave = Math.sin(t * 1.4 + bx * 3.2 + by * 2.4) * 0.5 + Math.cos(t * 1.1 + bz * 3.0) * 0.5;
+          const rr = R + wave * 0.16;
+          pos[i * 3] = bx * rr;
+          pos[i * 3 + 1] = by * rr;
+          pos[i * 3 + 2] = bz * rr;
+          const k = (wave + 1) / 2;
+          tmp.copy(grey).lerp(white, k);
+          if (k > 0.86) tmp.lerp(accent, (k - 0.86) / 0.14);
+          col[i * 3] = tmp.r; col[i * 3 + 1] = tmp.g; col[i * 3 + 2] = tmp.b;
+        }
+        geo.attributes.position.needsUpdate = true;
+        geo.attributes.color.needsUpdate = true;
+
+        group.rotation.y = t * 0.18 + mouse.x * 0.7 + scroll * 4;
+        group.rotation.x = mouse.y * 0.5 + scroll * 1.2;
+        group.scale.setScalar(1 + scroll * 0.35);
+        rings.forEach((r, i) => {
+          const a = t * r.speed + i * 2;
+          r.dot.position.set(Math.cos(a) * r.radius, 0, Math.sin(a) * r.radius);
+          r.holder.rotation.y = t * 0.1 * (i ? -1 : 1);
+        });
+      },
+    };
+  }, { fov: 45, z: 9.5 });
+
+  return <div ref={ref} className="three-fill" />;
+};
