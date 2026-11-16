@@ -21,10 +21,10 @@
 
 /* ---------- floating cards ---------- */
 .hh-right { position: relative; justify-self: end; width: min(100%, 20rem); }
-.hh-deck { position: relative; width: 100%; height: 33rem; }
-.hh-card { position: absolute; left: 0; top: 0; width: 100%; will-change: transform; }
+.hh-deck { position: relative; width: 100%; height: 39rem; }
+.hh-card { position: absolute; left: 0; top: 0; width: 16.5rem; will-change: transform; }
 .hh-card-in {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; min-height: 10rem; padding: 1.1rem 1.2rem; border-radius: 24px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; min-height: 5.4rem; padding: 0.8rem 1rem; border-radius: 20px;
   background: linear-gradient(160deg, #1d1d21, #0b0b0c); border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: 0 24px 55px rgba(0, 0, 0, 0.7);
   color: var(--white); animation: hh-float 5s ease-in-out infinite;
 }
@@ -34,14 +34,36 @@
 
 .hh-tag { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.22rem 0.7rem; border-radius: 999px; background: rgba(255, 255, 255, 0.1); font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; }
 .hh-card-num .hh-tag, .hh-card-work .hh-tag { background: rgba(0, 0, 0, 0.1); }
-.hh-big { font-family: var(--font-heading); font-weight: 800; font-size: 3rem; line-height: 1; letter-spacing: -0.04em; }
-.hh-company { font-family: var(--font-heading); font-weight: 800; font-size: 1.3rem; line-height: 1.1; }
+.hh-row { display: flex; align-items: baseline; gap: 0.6rem; }
+.hh-big { font-family: var(--font-heading); font-weight: 800; font-size: 2.4rem; line-height: 1; letter-spacing: -0.04em; }
+.hh-company { font-family: var(--font-heading); font-weight: 800; font-size: 0.95rem; line-height: 1.15; }
 .hh-sub { font-size: 0.88rem; line-height: 1.4; font-weight: 600; opacity: 0.85; }
-.hh-chips { display: flex; gap: 0.6rem; list-style: none; font-size: 1.5rem; }
-.hh-chips li { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); }
+.hh-chips { display: flex; gap: 0.6rem; list-style: none; font-size: 1.2rem; }
+.hh-chips li { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); }
+
+/* ---------- animated portrait ---------- */
+.hh-portrait { position: absolute; right: 0; top: 0; width: 15rem; aspect-ratio: 4 / 5; z-index: 1; }
+.hh-blob {
+  position: absolute; inset: 0; overflow: hidden; background: linear-gradient(160deg, #26262b, #0a0a0b 80%); border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 62% 38% 46% 54% / 55% 48% 52% 45%; animation: hh-morph 9s ease-in-out infinite;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+}
+.hh-blob img { position: absolute; left: -4%; bottom: -2%; width: 108%; height: auto; display: block; }
+@keyframes hh-morph {
+  0%, 100% { border-radius: 62% 38% 46% 54% / 55% 48% 52% 45%; }
+  33% { border-radius: 40% 60% 58% 42% / 44% 58% 42% 56%; }
+  66% { border-radius: 55% 45% 38% 62% / 60% 40% 60% 40%; }
+}
+.hh-ring { position: absolute; border-radius: 50%; pointer-events: none; }
+.hh-ring-a { inset: -9%; border: 1px dashed rgba(255, 199, 44, 0.55); animation: hh-spin 26s linear infinite; }
+.hh-ring-b { inset: -20%; border: 1px solid rgba(255, 255, 255, 0.1); animation: hh-spin 40s linear infinite reverse; }
+.hh-dot { position: absolute; border-radius: 50%; background: var(--accent); }
+.hh-dot-a { width: 12px; height: 12px; left: -6%; top: 22%; animation: hh-pulse 2.4s ease-in-out infinite; }
+.hh-dot-b { width: 8px; height: 8px; right: -8%; bottom: 26%; background: var(--white); animation: hh-pulse 2.4s ease-in-out -1.2s infinite; }
+@keyframes hh-pulse { 50% { transform: scale(1.8); opacity: 0.4; } }
 
 /* rotating text badge */
-.hh-badge-pos { position: absolute; right: -3.6rem; top: -3.4rem; z-index: 20; }
+.hh-badge-pos { position: absolute; left: -5.6rem; top: 6rem; z-index: 20; }
 .hh-badge { position: relative; display: grid; place-items: center; width: 7.6rem; height: 7.6rem; border-radius: 50%; background: #0b0b0c; border: 1px solid rgba(255, 255, 255, 0.2); color: var(--white); transition: transform 0.3s; }
 .hh-badge:hover { transform: scale(1.08); }
 .hh-badge-ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: hh-spin 14s linear infinite; }
@@ -52,14 +74,15 @@
 
 @media (max-width: 900px) {
   .hh-grid { grid-template-columns: 1fr; gap: 3rem; }
-  .hh-right { justify-self: start; width: min(72vw, 18rem); margin-left: 0.5rem; }
+  .hh-right { justify-self: start; width: min(80vw, 20rem); margin-left: 3.5rem; }
   .hh-title { font-size: clamp(2rem, 9.6vw, 5rem); }
-  .hh-badge-pos { right: -4.5rem; top: -3rem; }
+  .hh-badge-pos { left: -5.4rem; top: 4rem; }
 }
 @media (max-width: 600px) {
   .hh { padding-top: 6.5rem; }
   .hh-lead { font-size: 1.08rem; }
   .hh-badge { width: 6.2rem; height: 6.2rem; }
-  .hh-badge-pos { right: -2.6rem; }
+  .hh-badge-pos { left: -4.4rem; }
+  .hh-portrait { width: 12.5rem; }
 }
-@media (prefers-reduced-motion: reduce) { .hh-badge-ring, .hh-badge-arrow, .hh-card-in { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .hh-badge-ring, .hh-badge-arrow, .hh-card-in, .hh-blob, .hh-ring, .hh-dot { animation: none; } }

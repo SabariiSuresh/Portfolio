@@ -5,6 +5,7 @@ import { FaAngular, FaNodeJs } from 'react-icons/fa';
 import { SiMongodb, SiExpress, SiTypescript } from 'react-icons/si';
 import { Link } from 'react-scroll';
 import { Magnetic, Counter } from './Animations';
+import heroPhoto from '../assets/me-new.png';
 import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -60,9 +61,9 @@ const Badge = () => (
 );
 
 const CARDS = [
-  { id: 'num', y: 0, x: -10, r: -4, depth: 14 },
-  { id: 'work', y: 10.8, x: 18, r: 3, depth: -20 },
-  { id: 'stack', y: 21.6, x: -2, r: -2, depth: 26 },
+  { id: 'num', y: 16.6, x: -56, r: -4, depth: 14 },
+  { id: 'work', y: 22.2, x: 10, r: 3, depth: -20 },
+  { id: 'stack', y: 30.4, x: -30, r: -2, depth: 26 },
 ];
 
 const chips = [FaAngular, FaNodeJs, SiMongodb, SiExpress, SiTypescript];
@@ -71,29 +72,59 @@ const CardBody = ({ id }) => {
   if (id === 'num') {
     return (
       <>
-        <span className="hh-tag"><Layers size={14} /> In numbers</span>
-        <p className="hh-big"><Counter value="10+" /></p>
-        <p className="hh-sub">projects built with Angular, Node.js &amp; MongoDB</p>
+        <span className="hh-tag"><Layers size={13} /> In numbers</span>
+        <p className="hh-row"><span className="hh-big"><Counter value="10+" /></span><span className="hh-sub">projects built</span></p>
       </>
     );
   }
   if (id === 'work') {
     return (
       <>
-        <span className="hh-tag"><Briefcase size={14} /> Internship</span>
+        <span className="hh-tag"><Briefcase size={13} /> Internship</span>
         <p className="hh-company">Inmakes Infotech Pvt. Ltd</p>
-        <p className="hh-sub">10 Feb 2025 – 10 May 2025 · 3 months</p>
+        <p className="hh-sub">10 Feb – 10 May 2025</p>
       </>
     );
   }
   return (
     <>
-      <span className="hh-tag"><Code2 size={14} /> Core stack</span>
+      <span className="hh-tag"><Code2 size={13} /> Core stack</span>
       <ul className="hh-chips">{chips.map((Icon, i) => <li key={i}><Icon /></li>)}</ul>
-      <p className="hh-sub">MEAN · SQL · REST APIs</p>
     </>
   );
 };
+
+/* portrait: reveals upward, keeps morphing its outline, tilts and shifts with the pointer */
+function Portrait({ mx, my }) {
+  const rx = useTransform(my, (v) => v * -12);
+  const ry = useTransform(mx, (v) => v * 14);
+  const ix = useTransform(mx, (v) => v * -14);
+  const iy = useTransform(my, (v) => v * -8);
+  return (
+    <motion.div
+      className="hh-portrait"
+      style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}
+      initial={{ opacity: 0, scale: 0.7, rotate: -14, y: 60 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
+      transition={{ duration: 1.2, delay: 0.3, ease: EASE }}
+    >
+      <span className="hh-ring hh-ring-a" aria-hidden="true" />
+      <span className="hh-ring hh-ring-b" aria-hidden="true" />
+      <div className="hh-blob">
+        <motion.img
+          src={heroPhoto}
+          alt="Sabari Suresh"
+          style={{ x: ix, y: iy }}
+          initial={{ clipPath: 'inset(100% 0 0 0)' }}
+          animate={{ clipPath: 'inset(0% 0 0 0)' }}
+          transition={{ duration: 1.3, delay: 0.7, ease: EASE }}
+        />
+      </div>
+      <span className="hh-dot hh-dot-a" aria-hidden="true" />
+      <span className="hh-dot hh-dot-b" aria-hidden="true" />
+    </motion.div>
+  );
+}
 
 /* a card that tilts toward the pointer at its own depth, floats, and fans out on hover */
 function FloatCard({ card, index, mx, my, spread, entered }) {
@@ -168,6 +199,7 @@ const Hero = () => {
 
         <motion.div className="hh-right" style={{ y: deckY }}>
           <div className="hh-deck" onMouseEnter={() => setSpread(true)} onMouseLeave={() => setSpread(false)}>
+            <Portrait mx={mx} my={my} />
             {CARDS.map((card, i) => (
               <FloatCard key={card.id} card={card} index={i} mx={mx} my={my} spread={spread} entered={entered} />
             ))}

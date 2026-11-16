@@ -16,7 +16,7 @@
 }
 .cap-letter { display: inline-block; transform-origin: 50% 100%; will-change: transform, opacity; }
 
-.cap-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.8rem; width: 100%; max-width: 56rem; }
+.cap-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.9rem; width: 100%; max-width: 38rem; }
 .cap-cell { will-change: transform, opacity; }
 
 /* glass tile (no blur): brand tint over a dark base */
@@ -34,7 +34,7 @@
 
 /* simple (phones / short screens / reduced motion): normal flow */
 .skills-simple { padding: 5rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; }
-.skills-simple .cap-grid { grid-template-columns: repeat(4, 1fr); gap: 0.6rem; max-width: 30rem; }
+.skills-simple .cap-grid { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; max-width: 30rem; }
 .skills-simple .cap-icon { font-size: 1.6rem; }
 .skills-simple .cap-title { font-size: clamp(1.4rem, 8vw, 3rem); }
 .skills-simple .cap-tile { animation: cap-drift 4s ease-in-out infinite alternate; }

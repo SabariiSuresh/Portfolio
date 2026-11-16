@@ -1,39 +1,29 @@
 import React, { useRef, useSyncExternalStore } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { FaCss3Alt } from 'react-icons/fa';
-import { VscVscode } from 'react-icons/vsc';
+import { Network } from 'lucide-react';
+import { FaCss3Alt, FaAngular, FaNodeJs, FaGitAlt, FaHtml5 } from 'react-icons/fa';
 import {
-  SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiRedux, SiTailwindcss, SiNodedotjs, SiExpress,
-  SiMongodb, SiMysql, SiPostgresql, SiPhp, SiPython, SiFlutter, SiDocker, SiGit, SiGithub, SiVercel,
-  SiPostman, SiHtml5, SiBootstrap, SiReactquery,
+  SiJavascript, SiTypescript, SiExpress, SiMongodb, SiPostgresql, SiMysql, SiPostman, SiJasmine, SiLinux,
 } from 'react-icons/si';
 import './Skills.css';
 
+/* the original skill set */
 const TOOLS = [
-  { name: 'React', icon: SiReact, color: '#61dafb' },
-  { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff' },
-  { name: 'TypeScript', icon: SiTypescript, color: '#3178c6' },
+  { name: 'Angular', icon: FaAngular, color: '#e23237' },
   { name: 'JavaScript', icon: SiJavascript, color: '#f7df1e' },
-  { name: 'Redux Toolkit', icon: SiRedux, color: '#764abc' },
-  { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#38bdf8' },
-  { name: 'Node.js', icon: SiNodedotjs, color: '#6cc24a' },
+  { name: 'TypeScript', icon: SiTypescript, color: '#3178c6' },
+  { name: 'HTML5', icon: FaHtml5, color: '#e34f26' },
+  { name: 'CSS3', icon: FaCss3Alt, color: '#1572b6' },
+  { name: 'Node.js', icon: FaNodeJs, color: '#6cc24a' },
   { name: 'Express.js', icon: SiExpress, color: '#d9d9d9' },
+  { name: 'RESTful APIs', icon: Network, color: '#38bdf8' },
+  { name: 'Linux', icon: SiLinux, color: '#fcc624' },
   { name: 'MongoDB', icon: SiMongodb, color: '#47a248' },
-  { name: 'MySQL', icon: SiMysql, color: '#00a6d6' },
   { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169e1' },
-  { name: 'PHP', icon: SiPhp, color: '#777bb4' },
-  { name: 'Python', icon: SiPython, color: '#3776ab' },
-  { name: 'Flutter', icon: SiFlutter, color: '#54c5f8' },
-  { name: 'Docker', icon: SiDocker, color: '#2496ed' },
-  { name: 'Git', icon: SiGit, color: '#f05032' },
-  { name: 'GitHub', icon: SiGithub, color: '#ffffff' },
-  { name: 'Vercel', icon: SiVercel, color: '#ffffff' },
+  { name: 'MySQL', icon: SiMysql, color: '#00a6d6' },
+  { name: 'Git / GitHub', icon: FaGitAlt, color: '#f05032' },
   { name: 'Postman', icon: SiPostman, color: '#ff6c37' },
-  { name: 'VS Code', icon: VscVscode, color: '#2f9bff' },
-  { name: 'HTML', icon: SiHtml5, color: '#e34f26' },
-  { name: 'CSS', icon: FaCss3Alt, color: '#1572b6' },
-  { name: 'Bootstrap', icon: SiBootstrap, color: '#7952b3' },
-  { name: 'TanStack Query', icon: SiReactquery, color: '#ff4154' },
+  { name: 'Jasmine & Karma', icon: SiJasmine, color: '#b45ad0' },
 ];
 
 const WORD = 'CAPABILITIES';
