@@ -1,132 +1,149 @@
-import React, { useRef } from 'react';
-import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
-import { Terminal } from 'lucide-react';
-import { FaAngular, FaHtml5, FaCss3Alt, FaNodeJs, FaGitAlt } from 'react-icons/fa';
+import React, { useRef, useSyncExternalStore } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { FaCss3Alt } from 'react-icons/fa';
+import { VscVscode } from 'react-icons/vsc';
 import {
-  SiJavascript, SiTypescript, SiExpress, SiMongodb, SiPostgresql, SiMysql, SiPostman, SiJasmine,
+  SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiRedux, SiTailwindcss, SiNodedotjs, SiExpress,
+  SiMongodb, SiMysql, SiPostgresql, SiPhp, SiPython, SiFlutter, SiDocker, SiGit, SiGithub, SiVercel,
+  SiPostman, SiHtml5, SiBootstrap, SiReactquery,
 } from 'react-icons/si';
 import './Skills.css';
 
-/* each tile uses its technology's brand colour */
-const skills = [
-  { name: 'Angular', level: 95, icon: FaAngular, color: '#e23237' },
-  { name: 'JavaScript', level: 90, icon: SiJavascript, color: '#f7df1e' },
-  { name: 'TypeScript', level: 92, icon: SiTypescript, color: '#3a8bd6' },
-  { name: 'HTML5', level: 98, icon: FaHtml5, color: '#ff5a2c' },
-  { name: 'CSS3', level: 98, icon: FaCss3Alt, color: '#2d8ae6' },
-  { name: 'Node.js', level: 90, icon: FaNodeJs, color: '#6cc24a' },
-  { name: 'Express.js', level: 88, icon: SiExpress, color: '#d9d9d9' },
-  { name: 'MongoDB', level: 92, icon: SiMongodb, color: '#47a248' },
-  { name: 'PostgreSQL', level: 85, icon: SiPostgresql, color: '#5b8def' },
-  { name: 'MySQL', level: 80, icon: SiMysql, color: '#00a6d6' },
-  { name: 'Git / GitHub', level: 95, icon: FaGitAlt, color: '#ff6a45' },
-  { name: 'Postman', level: 80, icon: SiPostman, color: '#ff7a3c' },
-  { name: 'Jasmine', level: 75, icon: SiJasmine, color: '#b45ad0' },
-  { name: '& more', level: null, icon: Terminal, color: '#ffc72c' },
+const TOOLS = [
+  { name: 'React', icon: SiReact, color: '#61dafb' },
+  { name: 'Next.js', icon: SiNextdotjs, color: '#ffffff' },
+  { name: 'TypeScript', icon: SiTypescript, color: '#3178c6' },
+  { name: 'JavaScript', icon: SiJavascript, color: '#f7df1e' },
+  { name: 'Redux Toolkit', icon: SiRedux, color: '#764abc' },
+  { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#38bdf8' },
+  { name: 'Node.js', icon: SiNodedotjs, color: '#6cc24a' },
+  { name: 'Express.js', icon: SiExpress, color: '#d9d9d9' },
+  { name: 'MongoDB', icon: SiMongodb, color: '#47a248' },
+  { name: 'MySQL', icon: SiMysql, color: '#00a6d6' },
+  { name: 'PostgreSQL', icon: SiPostgresql, color: '#4169e1' },
+  { name: 'PHP', icon: SiPhp, color: '#777bb4' },
+  { name: 'Python', icon: SiPython, color: '#3776ab' },
+  { name: 'Flutter', icon: SiFlutter, color: '#54c5f8' },
+  { name: 'Docker', icon: SiDocker, color: '#2496ed' },
+  { name: 'Git', icon: SiGit, color: '#f05032' },
+  { name: 'GitHub', icon: SiGithub, color: '#ffffff' },
+  { name: 'Vercel', icon: SiVercel, color: '#ffffff' },
+  { name: 'Postman', icon: SiPostman, color: '#ff6c37' },
+  { name: 'VS Code', icon: VscVscode, color: '#2f9bff' },
+  { name: 'HTML', icon: SiHtml5, color: '#e34f26' },
+  { name: 'CSS', icon: FaCss3Alt, color: '#1572b6' },
+  { name: 'Bootstrap', icon: SiBootstrap, color: '#7952b3' },
+  { name: 'TanStack Query', icon: SiReactquery, color: '#ff4154' },
 ];
 
+const WORD = 'CAPABILITIES';
+const clamp = (v) => Math.min(1, Math.max(0, v));
 const ease = [0.16, 1, 0.3, 1];
 
-/* big headline: each letter rises from a mask, one after another */
-const RiseChar = ({ ch, index }) => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.3 });
-  return (
-    <span ref={ref} className="rise-mask" aria-hidden="true">
-      <motion.span
-        className="rise-char"
-        initial={{ y: '115%' }}
-        animate={{ y: inView ? 0 : '115%' }}
-        transition={{ duration: 0.9, delay: index * 0.045, ease }}
-      >
-        {ch}
-      </motion.span>
-    </span>
-  );
+/* phones, short screens and reduced-motion users get the un-pinned layout */
+const QUERIES = ['(max-width: 767px)', '(max-height: 619px)', '(prefers-reduced-motion: reduce)'];
+const subscribe = (cb) => {
+  const mqs = QUERIES.map((q) => window.matchMedia(q));
+  mqs.forEach((m) => m.addEventListener('change', cb));
+  return () => mqs.forEach((m) => m.removeEventListener('change', cb));
 };
-
-const RiseText = ({ text }) => (
-  <h2 className="skills-title" aria-label={text}>
-    {text.split('').map((ch, i) => (
-      <RiseChar key={i} ch={ch} index={i} />
-    ))}
-  </h2>
+const useSimple = () => useSyncExternalStore(
+  subscribe,
+  () => QUERIES.some((q) => window.matchMedia(q).matches),
+  () => false,
 );
 
-/* One tile: flips in from the centre outward, then tilts toward the mouse with a moving glare */
-const Tile = ({ skill, index, total }) => {
-  const wrapRef = useRef(null);
-  const tileRef = useRef(null);
-  const inView = useInView(wrapRef, { once: true, amount: 0.3 });
-  const rx = useMotionValue(0);
-  const ry = useMotionValue(0);
-  const srx = useSpring(rx, { stiffness: 220, damping: 18 });
-  const sry = useSpring(ry, { stiffness: 220, damping: 18 });
-  const Icon = skill.icon;
-  const delay = Math.abs(index - (total - 1) / 2) * 0.07;
-
-  const onMove = (e) => {
-    const r = tileRef.current.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    ry.set((px - 0.5) * 30);
-    rx.set(-(py - 0.5) * 30);
-    tileRef.current.style.setProperty('--mx', `${px * 100}%`);
-    tileRef.current.style.setProperty('--my', `${py * 100}%`);
-  };
-  const onLeave = () => { rx.set(0); ry.set(0); };
-
+const TileFace = ({ tool }) => {
+  const Icon = tool.icon;
   return (
-    <div ref={wrapRef} className="skill-tile-wrap">
-      <motion.div
-        initial={{ opacity: 0, rotateY: 90, scale: 0.6 }}
-        animate={inView ? { opacity: 1, rotateY: 0, scale: 1 } : { opacity: 0, rotateY: 90, scale: 0.6 }}
-        transition={{ type: 'spring', stiffness: 110, damping: 14, delay }}
-        style={{ perspective: 800 }}
-      >
-        <motion.div
-          ref={tileRef}
-          className="skill-tile"
-          style={{ '--c': skill.color, rotateX: srx, rotateY: sry }}
-          whileHover={{ scale: 1.1 }}
-          onMouseMove={onMove}
-          onMouseLeave={onLeave}
-        >
-          <span className="skill-glare" />
-          <Icon className="skill-tile-icon" />
-          <span className="skill-tile-name">{skill.name}</span>
-          {skill.level !== null && <span className="skill-tile-level">{skill.level}%</span>}
-        </motion.div>
-      </motion.div>
+    <div className="cap-tile" style={{ '--c': tool.color }}>
+      <Icon className="cap-icon" aria-hidden="true" />
+      <span className="cap-name">{tool.name}</span>
     </div>
   );
 };
 
-const Skills = () => (
-  <section className="skills section-padding" id="skills">
-    <div className="skills-glow glow-a" />
-    <div className="skills-glow glow-b" />
+/* ---------- pinned, scroll-driven version ---------- */
+const Letter = ({ ch, i, progress }) => {
+  const start = i * 0.003;
+  const t = (p) => clamp((p - start) / 0.035);
+  const opacity = useTransform(progress, t);
+  const y = useTransform(progress, (p) => `${(1 - t(p)) * 4}vh`);
+  const rotateX = useTransform(progress, (p) => (1 - t(p)) * -55);
+  return <motion.span className="cap-letter" aria-hidden="true" style={{ opacity, y, rotateX }}>{ch}</motion.span>;
+};
 
-    <div className="container skills-inner">
-      <motion.p
-        className="skills-eyebrow"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        ( Skills &amp; Tools )
-      </motion.p>
+const FlyTile = ({ tool, i, progress }) => {
+  const side = i % 2 === 0 ? -1 : 1;
+  const from = 46 - (i / TOOLS.length) * 22;
+  const start = 0.08 + (i / TOOLS.length) * 0.34;
+  const t = (p) => clamp((p - start) / 0.3);
+  const k = (p) => 1 - (1 - t(p)) ** 3; // ease-out
+  const x = useTransform(progress, (p) => `${side * from * (1 - k(p))}vw`);
+  const y = useTransform(progress, (p) => `${Math.sin(Math.PI * k(p)) * -9 + (1 - k(p)) * 10}vh`);
+  const rotate = useTransform(progress, (p) => side * 22 * (1 - k(p)));
+  const scale = useTransform(progress, (p) => 0.7 + 0.3 * k(p));
+  const opacity = useTransform(progress, (p) => clamp(t(p) / 0.25));
+  return (
+    <motion.div className="cap-cell" style={{ x, y, rotate, scale, opacity }}>
+      <TileFace tool={tool} />
+    </motion.div>
+  );
+};
 
-      <RiseText text="CAPABILITIES" />
-
-      <div className="skills-grid">
-        {skills.map((skill, i) => (
-          <Tile key={skill.name} skill={skill} index={i} total={skills.length} />
-        ))}
+const Pinned = () => {
+  const track = useRef(null);
+  const { scrollYProgress } = useScroll({ target: track, offset: ['start start', 'end end'] });
+  return (
+    <section className="skills" id="skills">
+      <div ref={track} className="cap-track">
+        <div className="cap-stage">
+          <h2 className="cap-title" aria-label={WORD}>
+            <span className="sr-only">{WORD}</span>
+            {WORD.split('').map((ch, i) => <Letter key={i} ch={ch} i={i} progress={scrollYProgress} />)}
+          </h2>
+          <div className="cap-grid">
+            {TOOLS.map((tool, i) => <FlyTile key={tool.name} tool={tool} i={i} progress={scrollYProgress} />)}
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
+  );
+};
+
+/* ---------- simple version: replays on every re-entry ---------- */
+const letterV = { hidden: { opacity: 0, y: 24, rotateX: -55 }, show: { opacity: 1, y: 0, rotateX: 0, transition: { duration: 0.6, ease } } };
+const tileV = { hidden: { opacity: 0, y: 40, scale: 0.7 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease } } };
+
+const Simple = () => (
+  <section className="skills skills-simple" id="skills">
+    <motion.h2
+      className="cap-title"
+      aria-label={WORD}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: false, amount: 0.6 }}
+      transition={{ staggerChildren: 0.04 }}
+    >
+      <span className="sr-only">{WORD}</span>
+      {WORD.split('').map((ch, i) => <motion.span key={i} className="cap-letter" aria-hidden="true" variants={letterV}>{ch}</motion.span>)}
+    </motion.h2>
+    <motion.div
+      className="cap-grid"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: false, amount: 0.15 }}
+      transition={{ staggerChildren: 0.04 }}
+    >
+      {TOOLS.map((tool) => (
+        <motion.div key={tool.name} className="cap-cell" variants={tileV}>
+          <TileFace tool={tool} />
+        </motion.div>
+      ))}
+    </motion.div>
   </section>
 );
+
+const Skills = () => (useSimple() ? <Simple /> : <Pinned />);
 
 export default Skills;

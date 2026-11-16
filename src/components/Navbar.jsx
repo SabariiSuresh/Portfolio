@@ -8,6 +8,7 @@ import './Navbar.css';
 const navLinks = [
   { name: 'Home', to: 'home' },
   { name: 'About', to: 'about' },
+  { name: 'Journey', to: 'experience' },
   { name: 'Skills', to: 'skills' },
   { name: 'Projects', to: 'projects' },
   { name: 'Contact', to: 'contact' },

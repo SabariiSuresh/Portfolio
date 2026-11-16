@@ -2,12 +2,12 @@
 
 :root {
   /* Palette: charcoal, white, amber */
-  --black: #1a1a1c;
+  --black: #000000;
   --white: #ffffff;
   --accent: #ffc72c;
   --accent-ink: #1a1a1c;   /* text on accent fills */
-  --bg: #1a1a1c;
-  --surface: #242426;
+  --bg: #000000;
+  --surface: #141416;
   --line: rgba(255, 255, 255, 0.12);
   --muted: rgba(255, 255, 255, 0.72);
   --font-main: 'DM Sans', sans-serif;
@@ -20,29 +20,13 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background:
-    radial-gradient(ellipse 60% 50% at 92% 6%, rgba(255, 150, 0, 0.20), transparent 70%),
-    radial-gradient(ellipse 45% 40% at 0% 100%, rgba(255, 199, 44, 0.06), transparent 70%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--white);
   font-family: var(--font-main);
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
-/* faint column guides */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; bottom: 0; left: 50%;
-  width: min(1180px, calc(100% - 5rem));
-  transform: translateX(-50%);
-  background-image: repeating-linear-gradient(to right, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 25%);
-  border-right: 1px solid rgba(255, 255, 255, 0.045);
-  pointer-events: none;
-  z-index: 0;
-}
 #root { position: relative; z-index: 1; }
 
 h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height: 1.02; }

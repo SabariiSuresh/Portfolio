@@ -1,78 +1,43 @@
-@property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.skills { position: relative; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.skills { position: relative; overflow: clip; border-top: 1px solid var(--line); padding-top: 9rem; padding-bottom: 9rem; }
-
-/* soft drifting colour glows behind the section */
-.skills-glow { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(30px); }
-.glow-a { width: 600px; height: 600px; left: -12%; top: 8%; background: radial-gradient(circle, rgba(140, 90, 255, 0.2), transparent 65%); animation: glow-drift 12s ease-in-out infinite; }
-.glow-b { width: 560px; height: 560px; right: -10%; bottom: 0; background: radial-gradient(circle, rgba(255, 150, 0, 0.18), transparent 65%); animation: glow-drift 15s ease-in-out infinite reverse; }
-@keyframes glow-drift { 50% { transform: translate(40px, -30px) scale(1.12); } }
-
-.skills-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
-
-.skills-eyebrow { font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 1.6rem; }
-
-.skills-title {
-  display: flex; justify-content: center; flex-wrap: nowrap; max-width: 100%;
-  font-family: var(--font-heading); font-weight: 800; font-size: clamp(1.7rem, 7.4vw, 7rem);
-  letter-spacing: -0.045em; line-height: 0.95; margin-bottom: 4rem;
+/* pinned scene: tall track, sticky full-height stage */
+.cap-track { height: 300vh; }
+.cap-stage {
+  position: sticky; top: 0; height: 100svh; overflow: clip;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1.5rem, 4vh, 3rem);
+  padding: 0 1rem;
 }
-.rise-mask { display: inline-block; overflow: hidden; padding-bottom: 0.1em; }
-.rise-char {
-  display: inline-block; will-change: transform;
-  background: linear-gradient(100deg, #fff 0%, #fff 38%, var(--accent) 50%, #fff 62%, #fff 100%);
-  background-size: 300% 100%;
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  animation: title-shimmer 5s linear infinite;
+
+.cap-title {
+  position: relative; z-index: 3; display: flex; justify-content: center; perspective: 800px;
+  font-family: var(--font-heading); font-weight: 800; font-size: clamp(1.6rem, 5vw, 4.4rem);
+  letter-spacing: -0.03em; line-height: 1; color: var(--white);
 }
-@keyframes title-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.cap-letter { display: inline-block; transform-origin: 50% 100%; will-change: transform, opacity; }
 
-/* tiles */
-.skills-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; max-width: 1180px; }
-.skill-tile-wrap { width: 148px; }
+.cap-grid { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.8rem; width: 100%; max-width: 56rem; }
+.cap-cell { will-change: transform, opacity; }
 
-.skill-tile {
-  --mx: 50%; --my: 50%;
-  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.9rem;
-  width: 148px; height: 148px; border-radius: 24px; cursor: default; transform-style: preserve-3d;
-  border: 1px solid color-mix(in srgb, var(--c) 38%, transparent);
-  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 22%, transparent), color-mix(in srgb, var(--c) 5%, transparent));
-  transition: border-color 0.3s, box-shadow 0.3s;
+/* glass tile (no blur): brand tint over a dark base */
+.cap-tile {
+  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
+  border-radius: 16px; padding: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+  background-color: rgba(11, 11, 11, 0.4);
+  background-image: linear-gradient(color-mix(in srgb, var(--c) 20%, transparent), color-mix(in srgb, var(--c) 20%, transparent));
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
-.skill-tile:hover { border-color: var(--c); box-shadow: 0 20px 55px color-mix(in srgb, var(--c) 42%, transparent), inset 0 0 26px color-mix(in srgb, var(--c) 20%, transparent); }
+.cap-tile:hover { border-color: var(--c); box-shadow: 0 0 0 1px var(--c); }
+.cap-icon { font-size: 2rem; color: var(--c); flex-shrink: 0; }
+.cap-name { font-family: var(--font-mono); font-size: 10px; line-height: 1.2; text-align: center; color: var(--white); }
 
-/* rotating colour shimmer around the edge */
-.skill-tile::before {
-  content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none;
-  background: conic-gradient(from var(--angle), transparent 0 72%, var(--c) 92%, transparent 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  animation: border-spin 5s linear infinite;
-}
-@keyframes border-spin { to { --angle: 360deg; } }
-
-/* light glare that follows the cursor */
-.skill-glare {
-  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s;
-  background: radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, 0.28), transparent 55%);
-}
-.skill-tile:hover .skill-glare { opacity: 1; }
-
-.skill-tile-icon { font-size: 3.2rem; color: var(--c); filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c) 55%, transparent)); transform: translateZ(30px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-.skill-tile:hover .skill-tile-icon { transform: translateZ(50px) scale(1.15); }
-
-.skill-tile-name { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.3px; transform: translateZ(20px); transition: opacity 0.25s; }
-.skill-tile-level { position: absolute; left: 0; right: 0; bottom: 1.05rem; font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; color: var(--c); opacity: 0; transform: translateZ(20px) translateY(8px); transition: opacity 0.25s, transform 0.25s; }
-.skill-tile:hover .skill-tile-name { opacity: 0; }
-.skill-tile:hover .skill-tile-level { opacity: 1; transform: translateZ(20px) translateY(0); }
-
-@media (max-width: 700px) {
-  .skills { padding-top: 6rem; padding-bottom: 6rem; }
-  .skills-grid { gap: 1rem; }
-  .skill-tile-wrap, .skill-tile { width: 104px; }
-  .skill-tile { height: 104px; border-radius: 18px; gap: 0.6rem; }
-  .skill-tile-icon { font-size: 2.2rem; }
-  .skill-tile-name, .skill-tile-level { font-size: 0.68rem; }
-  .skill-tile-level { bottom: 0.7rem; }
-}
-@media (prefers-reduced-motion: reduce) { .skill-tile::before, .rise-char, .skills-glow { animation: none; } }
+/* simple (phones / short screens / reduced motion): normal flow */
+.skills-simple { padding: 5rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; }
+.skills-simple .cap-grid { grid-template-columns: repeat(4, 1fr); gap: 0.6rem; max-width: 30rem; }
+.skills-simple .cap-icon { font-size: 1.6rem; }
+.skills-simple .cap-title { font-size: clamp(1.4rem, 8vw, 3rem); }
+.skills-simple .cap-tile { animation: cap-drift 4s ease-in-out infinite alternate; }
+.skills-simple .cap-cell:nth-child(even) .cap-tile { animation-delay: -2s; }
+@keyframes cap-drift { to { translate: 0 3px; } }
+@media (prefers-reduced-motion: reduce) { .skills-simple .cap-tile { animation: none; } }

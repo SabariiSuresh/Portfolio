@@ -1,4 +1,4 @@
-﻿.contact { position: relative; overflow: hidden; border-top: 1px solid var(--line); background: var(--black); }
+﻿.contact { position: relative; overflow: hidden; background: var(--black); }
 .contact .container { position: relative; z-index: 1; }
 
 .contact-hero { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 6rem; }
@@ -51,7 +51,7 @@ a.value:hover { color: var(--accent); }
 .modal-close { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; }
 .modal-close:hover { border-color: var(--accent); color: var(--accent); }
 
-.footer-bottom { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 6rem; padding-top: 1.8rem; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.footer-bottom { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 6rem; padding-top: 1.8rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
 
 @media (max-width: 900px) { .contact-wrapper { grid-template-columns: 1fr; gap: 3.5rem; } }
 
