@@ -9,14 +9,21 @@ const ScrollLink = ({ to, offset = 0, onSetActive, spy, onClick, children, class
 
   useEffect(() => {
     if (!spy) return undefined;
-    const el = document.getElementById(to);
-    if (!el) return undefined;
-    const io = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && cb.current) cb.current(to); },
-      { rootMargin: '-45% 0px -50% 0px' },
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    let io;
+    /* the section may mount later (the hero appears after the loading screen), so wait for it */
+    const attach = () => {
+      const el = document.getElementById(to);
+      if (!el) return false;
+      io = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting && cb.current) cb.current(to); },
+        { rootMargin: '-45% 0px -50% 0px' },
+      );
+      io.observe(el);
+      return true;
+    };
+    let timer;
+    if (!attach()) timer = setInterval(() => { if (attach()) clearInterval(timer); }, 250);
+    return () => { clearInterval(timer); if (io) io.disconnect(); };
   }, [spy, to]);
 
   const handle = (e) => {
