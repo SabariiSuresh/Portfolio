@@ -1,0 +1,45 @@
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  z-index: 2000;
+}
+
+.typewriter { color: var(--white); font-family: var(--font-mono); font-weight: 600; }
+.typewriter-caret {
+  display: inline-block; width: 2px; height: 1.05em; margin-left: 4px;
+  vertical-align: text-bottom; background: var(--accent);
+  animation: caret-blink 0.9s steps(1) infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+.tilt-card { position: relative; transform-style: preserve-3d; will-change: transform; }
+.tilt-glow { display: none; }
+
+.marquee {
+  overflow: hidden;
+  padding: 1.6rem 0;
+  border-block: 1px solid var(--line);
+}
+.marquee-track { display: flex; width: max-content; animation: marquee-scroll 35s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-item {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+  padding: 0 1.6rem;
+  white-space: nowrap;
+  transition: color 0.3s, -webkit-text-stroke-color 0.3s;
+}
+.marquee-item:hover { color: var(--accent); -webkit-text-stroke-color: var(--accent); }
+.marquee-star { color: var(--accent); -webkit-text-stroke: 0; margin-right: 1.6rem; font-size: 0.6em; vertical-align: middle; }
+@keyframes marquee-scroll { to { transform: translateX(-50%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .typewriter-caret { animation: none; }
+}

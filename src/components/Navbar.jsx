@@ -1,110 +1,114 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { FaGithub, FaLinkedin, FaInstagram } from 'react-icons/fa';
 import { Link } from 'react-scroll';
 import './Navbar.css';
 
+const navLinks = [
+  { name: 'Home', to: 'home' },
+  { name: 'About', to: 'about' },
+  { name: 'Skills', to: 'skills' },
+  { name: 'Projects', to: 'projects' },
+  { name: 'Contact', to: 'contact' },
+];
+
+const socials = [
+  { icon: FaGithub, href: 'https://github.com/SabariiSuresh' },
+  { icon: FaLinkedin, href: 'https://linkedin.com/in/sabari-suresh-939301352' },
+  { icon: FaInstagram, href: 'https://www.instagram.com/xenorez' },
+];
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [active, setActive] = useState('home');
+  const lastY = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setHidden(y > lastY.current && y > 200 && !isOpen);
+      lastY.current = y;
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { name: 'Home', to: 'home' },
-    { name: 'About', to: 'about' },
-    { name: 'Skills', to: 'skills' },
-    { name: 'Projects', to: 'projects' },
-    { name: 'Contact', to: 'contact' },
-  ];
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isOpen]);
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="container nav-container">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="logo"
-        >
-          <Link to="home" smooth duration={100} offset={-70}>
-            <span className="logo-text">SABARI</span>
+    <>
+      <motion.header
+        className="topnav"
+        initial={{ y: -90, opacity: 0 }}
+        animate={{ y: hidden ? -120 : 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="topnav-bar">
+          <Link to="home" smooth duration={400} className="topnav-logo">
+            <span className="logo-mark">SS</span>
+            <span className="logo-text">
+              <strong>Sabari Suresh</strong>
+              <small>MEAN Stack Developer</small>
+            </span>
           </Link>
-          <span className="logo-dot">.</span>
-        </motion.div>
 
-        <ul className="nav-links desktop-only">
-          {navLinks.map((link , i) => (
-            <motion.li key={link.name}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-            >
+          <nav className="topnav-links">
+            {navLinks.map((link) => (
               <Link
+                key={link.name}
                 to={link.to}
                 smooth="easeInOutQuart"
-                duration={100}
-                spy={true}
-                offset={-70}
-                activeClass="active-link"
-                isDynamic={true}
+                duration={400}
+                spy
+                offset={-90}
+                onSetActive={() => setActive(link.to)}
+                className={`topnav-link ${active === link.to ? 'is-active' : ''}`}
               >
-                {link.name}
+                {active === link.to && (
+                  <motion.span layoutId="nav-active" className="topnav-pill" transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                )}
+                <span className="topnav-label">{link.name}</span>
               </Link>
-            </motion.li>
-          ))}
-        </ul>
+            ))}
+          </nav>
 
-        <div className="nav-socials desktop-only">
-          <a href="https://github.com/SabariiSuresh" target="_blank" rel="noreferrer"><FaGithub size={20} /></a>
-          <a href="https://linkedin.com/in/sabari-suresh-939301352" target="_blank" rel="noreferrer"><FaLinkedin size={20} /></a>
-          <a href="https://www.instagram.com/xenorez"><FaInstagram size={20} /></a>
+          <div className="topnav-right">
+            <Link to="contact" smooth="easeInOutQuart" duration={400} offset={-90} className="topnav-cta">
+              Let's Connect <ArrowUpRight size={18} />
+            </Link>
+            <button className="topnav-toggle" onClick={() => setIsOpen(!isOpen)} aria-label="Menu">
+              {isOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          </div>
         </div>
-
-        <button className="mobile-toggle" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
+      </motion.header>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mobile-menu"
-          >
-            <ul className="mobile-nav-links">
-              {navLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.to}
-                    smooth="easeInOutQuart"
-                    duration={100}
-                    offset={-70}
-
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.name}
+          <motion.div className="mobile-menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <ul>
+              {navLinks.map((link, i) => (
+                <motion.li
+                  key={link.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08 * i }}
+                >
+                  <Link to={link.to} smooth duration={400} offset={-90} onClick={() => setIsOpen(false)}>
+                    <span>0{i + 1}</span> {link.name}
                   </Link>
-                </li>
+                </motion.li>
               ))}
-              <li className="mobile-socials">
-                <a href="https://github.com/SabariiSuresh" target="_blank" rel="noreferrer"><FaGithub size={24} /></a>
-                <a href="https://linkedin.com/in/sabari-suresh-939301352" target="_blank" rel="noreferrer"><FaLinkedin size={24} /></a>
-                <a href="#"><FaInstagram size={24} /></a>
-              </li>
             </ul>
+            <div className="mobile-socials">
+              {socials.map(({ icon: Icon, href }) => (
+                <a key={href} href={href} target="_blank" rel="noreferrer"><Icon size={22} /></a>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 };
 

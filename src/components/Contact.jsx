@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Heart, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, X, ArrowUpRight } from 'lucide-react';
 import { FaGithub, FaLinkedin, FaInstagram } from 'react-icons/fa';
+import { MaskLine, Magnetic } from './Animations';
+import { WaveGrid } from './Lazy';
 import './Contact.css';
 
 const Contact = () => {
@@ -45,102 +47,96 @@ const Contact = () => {
 
   return (
     <footer className="contact section-padding" id="contact">
+      <div className="scene-wave"><WaveGrid /></div>
+
       <div className="container">
-        <div className="contact-header">
-          <h4 className="section-subtitle">GET IN TOUCH</h4>
-          <h2 className="section-title">Let's Create <span className="text-gradient">Something </span> Great</h2>
+        <div className="contact-hero">
+          <h4 className="section-subtitle">Get in touch</h4>
+          <h2 className="contact-big">
+            <MaskLine>Let's create</MaskLine><br />
+            <MaskLine delay={0.1}><span className="outline">something</span> <span className="hl">great.</span></MaskLine>
+          </h2>
+
+          <Magnetic strength={0.25}>
+            <a className="circle-cta" href="mailto:sabarisuresh65@gmail.com">
+              <span>Say hello</span>
+              <ArrowUpRight size={30} />
+            </a>
+          </Magnetic>
         </div>
 
         <div className="contact-wrapper">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="contact-info"
+          <motion.form
+            className="contact-form"
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
           >
-            <div className="contact-card glass-card">
-              <h3>Connect With Me</h3>
-              <p>I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.</p>
-
-              <div className="contact-methods">
-                <div className="method">
-                  <div className="icon-box"><Mail size={20} /></div>
-                  <div>
-                    <p className="label">Email Me</p>
-                    <p className="value-mail" onClick={() => window.location.href = 'mailto:sabarisuresh65@gmail.com'}>sabarisuresh65@gmail.com</p>
-                  </div>
-                </div>
-                <div className="method">
-                  <div className="icon-box"><MapPin size={20} /></div>
-                  <div>
-                    <p className="label">Location</p>
-                    <p className="value">India</p>
-                  </div>
-                </div>
-                <div className="method">
-                  <div className="icon-box"><Phone size={20} /></div>
-                  <div>
-                    <p className="label">Call Me</p>
-                    <p className="value-phone" onClick={() => window.location.href = 'tel:+917012573584'}>+91 7012573584</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="contact-socials">
-                <a href="https://github.com/SabariiSuresh" target="_blank" rel="noreferrer" className="social-btn"><FaGithub /></a>
-                <a href="https://linkedin.com/in/sabari-suresh-939301352" target="_blank" rel="noreferrer" className="social-btn"><FaLinkedin /></a>
-                <a href="https://www.instagram.com/xenorez" className="social-btn"><FaInstagram /></a>
-              </div>
+            <div className="form-group">
+              <label htmlFor="name">01 — Name</label>
+              <input id="name" type="text" name="name" placeholder="Your name" value={formData.name} onChange={handleChange} required />
             </div>
-          </motion.div>
+            <div className="form-group">
+              <label htmlFor="email">02 — Email</label>
+              <input id="email" type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="message">03 — Message</label>
+              <textarea id="message" name="message" placeholder="Tell me about your project" rows="4" value={formData.message} onChange={handleChange} required></textarea>
+            </div>
+
+            <button
+              type="submit"
+              className={`btn btn-primary submit-btn ${status === 'loading' ? 'loading' : ''}`}
+              disabled={status === 'loading'}
+            >
+              {status === 'loading' ? 'Sending...' : 'Send Message'}
+              <Send size={18} />
+            </button>
+          </motion.form>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="contact-form-container"
+            className="contact-info"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
           >
-            <form className="contact-form glass-card" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <textarea
-                  name="message"
-                  placeholder="Your Message"
-                  rows="5"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                ></textarea>
-              </div>
+            <p className="contact-blurb">
+              I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
+            </p>
 
-              <button
-                type="submit"
-                className={`btn btn-primary submit-btn ${status === 'loading' ? 'loading' : ''}`}
-                disabled={status === 'loading'}
-              >
-                {status === 'loading' ? 'Sending...' : 'Send Message'}
-                <Send size={18} />
-              </button>
-            </form>
+            <ul className="contact-methods">
+              <li>
+                <Mail size={18} />
+                <div>
+                  <span className="label">Email Me</span>
+                  <a className="value" href="mailto:sabarisuresh65@gmail.com">sabarisuresh65@gmail.com</a>
+                </div>
+              </li>
+              <li>
+                <MapPin size={18} />
+                <div>
+                  <span className="label">Location</span>
+                  <span className="value">India</span>
+                </div>
+              </li>
+              <li>
+                <Phone size={18} />
+                <div>
+                  <span className="label">Call Me</span>
+                  <a className="value" href="tel:+917012573584">+91 7012573584</a>
+                </div>
+              </li>
+            </ul>
+
+            <div className="contact-socials">
+              <a href="https://github.com/SabariiSuresh" target="_blank" rel="noreferrer" className="social-btn"><FaGithub /></a>
+              <a href="https://linkedin.com/in/sabari-suresh-939301352" target="_blank" rel="noreferrer" className="social-btn"><FaLinkedin /></a>
+              <a href="https://www.instagram.com/xenorez" target="_blank" rel="noreferrer" className="social-btn"><FaInstagram /></a>
+            </div>
           </motion.div>
         </div>
 
@@ -158,7 +154,7 @@ const Contact = () => {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                className={`modal-content glass-card ${status}`}
+                className={`modal-content ${status}`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <button className="modal-close" onClick={() => setStatus(null)}>
@@ -183,6 +179,7 @@ const Contact = () => {
 
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} Sabari Suresh. All rights reserved.</p>
+          <p>Built with React &amp; Three.js</p>
         </div>
       </div>
     </footer>
