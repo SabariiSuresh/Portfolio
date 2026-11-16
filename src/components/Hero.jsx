@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
-import { ArrowDown, ArrowUpRight, Briefcase, Download, Layers, Code2 } from 'lucide-react';
-import { FaAngular, FaNodeJs } from 'react-icons/fa';
-import { SiMongodb, SiExpress, SiTypescript } from 'react-icons/si';
+import { ArrowUpRight, Download, Layers, Briefcase, Code2 } from 'lucide-react';
 import { Link } from 'react-scroll';
 import { Magnetic, Counter } from './Animations';
 import heroPhoto from '../assets/me-new.png';
@@ -10,153 +8,112 @@ import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
 const RESUME = 'https://drive.google.com/file/d/1FZVECtlgDd7GsdTKtOE5W6oslzuyePnT/view?usp=sharing';
-const WORDS = ['Web Apps', 'REST APIs', 'Dashboards', 'Products'];
-const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<>/{}#$%';
+const ROLES = ['Full-Stack Developer', 'MEAN Stack Engineer', 'API Designer', 'Problem Solver'];
+const LEAD = 'I build scalable, high-performance web apps with the MEAN stack and clean, tested code.';
 
-/* text that decodes itself: random glyphs settle into the real letters, left to right */
-function useScramble(target, { start = true, delay = 0, speed = 38 } = {}) {
-  const [out, setOut] = useState(' '.repeat(target.length));
-  useEffect(() => {
-    if (!start) return undefined;
-    let id = 0;
-    let step = 0;
-    const begin = window.setTimeout(() => {
-      id = window.setInterval(() => {
-        step += 1;
-        const settled = step / 2;
-        if (settled >= target.length) { window.clearInterval(id); setOut(target); return; }
-        setOut(target.split('').map((ch, i) => (ch === ' ' ? ' ' : i < settled ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)])).join(''));
-      }, speed);
-    }, delay);
-    return () => { window.clearTimeout(begin); window.clearInterval(id); };
-  }, [target, start, delay, speed]);
-  return out;
-}
-
-const Decode = ({ text, delay }) => {
-  const out = useScramble(text, { delay });
-  return <span className="hh-decode" aria-label={text}><span aria-hidden="true">{out}</span></span>;
-};
-
-/* the cycling word decodes into the next one */
-function CycleWord() {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    const id = window.setInterval(() => setI((v) => (v + 1) % WORDS.length), 2800);
-    return () => window.clearInterval(id);
-  }, []);
-  const out = useScramble(WORDS[i], { delay: i === 0 ? 1100 : 0, speed: 32 });
-  return <span className="hh-cycle" aria-label={WORDS.join(', ')}><span aria-hidden="true">{out}</span></span>;
-}
-
-/* circular text that keeps turning */
-const Badge = () => (
-  <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hh-badge" aria-label="Scroll to projects">
-    <svg viewBox="0 0 120 120" className="hh-badge-ring" aria-hidden="true">
-      <defs><path id="hh-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" /></defs>
-      <text><textPath href="#hh-circle" textLength="283" lengthAdjust="spacing">SABARI SURESH • FULL-STACK DEV • </textPath></text>
-    </svg>
-    <ArrowDown size={26} className="hh-badge-arrow" />
-  </Link>
-);
-
-const CARDS = [
-  { id: 'num', y: 16.6, x: -56, r: -4, depth: 14 },
-  { id: 'work', y: 22.2, x: 10, r: 3, depth: -20 },
-  { id: 'stack', y: 30.4, x: -30, r: -2, depth: 26 },
+const STATS = [
+  { icon: Layers, label: 'Projects', value: '10+', fill: 0.85 },
+  { icon: Briefcase, label: 'Internship', value: '3 Months', fill: 0.6 },
+  { icon: Code2, label: 'Stack', value: 'MEAN', fill: 1, plain: true },
 ];
 
-const chips = [FaAngular, FaNodeJs, SiMongodb, SiExpress, SiTypescript];
-
-const CardBody = ({ id }) => {
-  if (id === 'num') {
-    return (
-      <>
-        <span className="hh-tag"><Layers size={13} /> In numbers</span>
-        <p className="hh-row"><span className="hh-big"><Counter value="10+" /></span><span className="hh-sub">projects built</span></p>
-      </>
-    );
-  }
-  if (id === 'work') {
-    return (
-      <>
-        <span className="hh-tag"><Briefcase size={13} /> Internship</span>
-        <p className="hh-company">Inmakes Infotech Pvt. Ltd</p>
-        <p className="hh-sub">10 Feb – 10 May 2025</p>
-      </>
-    );
-  }
+/* a word whose letters rise in one by one, then glitches now and then */
+function GlitchWord({ text, delay, outline }) {
   return (
-    <>
-      <span className="hh-tag"><Code2 size={13} /> Core stack</span>
-      <ul className="hh-chips">{chips.map((Icon, i) => <li key={i}><Icon /></li>)}</ul>
-    </>
-  );
-};
-
-/* portrait: reveals upward, keeps morphing its outline, tilts and shifts with the pointer */
-function Portrait({ mx, my }) {
-  const rx = useTransform(my, (v) => v * -12);
-  const ry = useTransform(mx, (v) => v * 14);
-  const ix = useTransform(mx, (v) => v * -14);
-  const iy = useTransform(my, (v) => v * -8);
-  return (
-    <motion.div
-      className="hh-portrait"
-      style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}
-      initial={{ opacity: 0, scale: 0.7, rotate: -14, y: 60 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
-      transition={{ duration: 1.2, delay: 0.3, ease: EASE }}
-    >
-      <span className="hh-ring hh-ring-a" aria-hidden="true" />
-      <span className="hh-ring hh-ring-b" aria-hidden="true" />
-      <div className="hh-blob">
-        <motion.img
-          src={heroPhoto}
-          alt="Sabari Suresh"
-          style={{ x: ix, y: iy }}
-          initial={{ clipPath: 'inset(100% 0 0 0)' }}
-          animate={{ clipPath: 'inset(0% 0 0 0)' }}
-          transition={{ duration: 1.3, delay: 0.7, ease: EASE }}
-        />
-      </div>
-      <span className="hh-dot hh-dot-a" aria-hidden="true" />
-      <span className="hh-dot hh-dot-b" aria-hidden="true" />
-    </motion.div>
+    <span className={`hd-word ${outline ? 'hd-word-outline' : ''}`} data-text={text} aria-hidden="true">
+      {text.split('').map((ch, i) => (
+        <span key={i} className="hd-mask">
+          <motion.span
+            className="hd-char"
+            initial={{ y: '115%', rotate: 10 }}
+            animate={{ y: 0, rotate: 0 }}
+            transition={{ duration: 0.9, delay: delay + i * 0.06, ease: EASE }}
+          >
+            {ch}
+          </motion.span>
+        </span>
+      ))}
+    </span>
   );
 }
 
-/* a card that tilts toward the pointer at its own depth, floats, and fans out on hover */
-function FloatCard({ card, index, mx, my, spread, entered }) {
-  const rx = useTransform(my, (v) => v * -10);
-  const ry = useTransform(mx, (v) => v * 12);
-  const px = useTransform(mx, (v) => v * card.depth);
+/* "> role" typed, deleted, typed again */
+function Typed() {
+  const [text, setText] = useState('');
+  useEffect(() => {
+    let role = 0;
+    let n = 0;
+    let deleting = false;
+    let timer = 0;
+    const tick = () => {
+      const word = ROLES[role];
+      n += deleting ? -1 : 1;
+      setText(word.slice(0, n));
+      let wait = deleting ? 36 : 70;
+      if (!deleting && n === word.length) { deleting = true; wait = 1500; }
+      else if (deleting && n === 0) { deleting = false; role = (role + 1) % ROLES.length; wait = 350; }
+      timer = window.setTimeout(tick, wait);
+    };
+    timer = window.setTimeout(tick, 1300);
+    return () => window.clearTimeout(timer);
+  }, []);
   return (
-    <motion.div
-      className={`hh-card hh-card-${card.id}`}
-      style={{ rotateX: rx, rotateY: ry, x: px, transformPerspective: 900, zIndex: index + 1 }}
-      initial={{ opacity: 0, x: 140, y: `${card.y + 4}rem`, rotate: 18 }}
-      animate={{ opacity: 1, x: card.x * (spread ? 2.4 : 1), y: `${card.y * (spread ? 1.1 : 1)}rem`, rotate: spread ? 0 : card.r }}
-      transition={{ type: 'spring', stiffness: 110, damping: 16, delay: entered ? 0 : 0.9 + index * 0.18 }}
-    >
-      <div className="hh-card-in" style={{ animationDelay: `${index * -1.3}s` }}>
-        <CardBody id={card.id} />
-      </div>
-    </motion.div>
+    <p className="hd-typed" aria-label={ROLES.join(', ')}>
+      <span className="hd-prompt">&gt;</span>
+      <span aria-hidden="true">{text}</span><i className="hd-caret" />
+    </p>
   );
 }
+
+/* drifting specks of light in the background */
+/* positions are generated once, when the module loads */
+const SPECKS = Array.from({ length: 26 }, () => ({
+  left: Math.random() * 100,
+  top: Math.random() * 78,
+  size: 1 + Math.random() * 2.6,
+  dur: 5 + Math.random() * 8,
+  delay: -Math.random() * 10,
+}));
+
+function Specks() {
+  return (
+    <div className="hd-specks" aria-hidden="true">
+      {SPECKS.map((s, i) => (
+        <span key={i} style={{ left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size, animationDuration: `${s.dur}s`, animationDelay: `${s.delay}s` }} />
+      ))}
+    </div>
+  );
+}
+
+/* tick-marked radar ring that keeps turning */
+const Radar = () => (
+  <svg viewBox="0 0 200 200" className="hd-radar" aria-hidden="true">
+    <circle cx="100" cy="100" r="96" className="hd-radar-line" />
+    <circle cx="100" cy="100" r="78" className="hd-radar-line hd-radar-dash" />
+    {Array.from({ length: 48 }, (_, i) => {
+      const a = (i / 48) * Math.PI * 2;
+      const long = i % 4 === 0;
+      const r1 = 96;
+      const r2 = long ? 88 : 92;
+      return <line key={i} x1={100 + Math.cos(a) * r1} y1={100 + Math.sin(a) * r1} x2={100 + Math.cos(a) * r2} y2={100 + Math.sin(a) * r2} className="hd-tick" />;
+    })}
+  </svg>
+);
 
 const Hero = () => {
   const ref = useRef(null);
   const mx = useSpring(useMotionValue(0), { stiffness: 90, damping: 16 });
   const my = useSpring(useMotionValue(0), { stiffness: 90, damping: 16 });
-  const [spread, setSpread] = useState(false);
-  const [entered, setEntered] = useState(false);
-  useEffect(() => { const t = window.setTimeout(() => setEntered(true), 2600); return () => window.clearTimeout(t); }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const headX = useTransform(scrollYProgress, [0, 1], ['0vw', '-12vw']);
-  const headOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const deckY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+
+  const rx = useTransform(my, (v) => v * -10);
+  const ry = useTransform(mx, (v) => v * 14);
+  const innerX = useTransform(mx, (v) => v * -12);
+  const bgX = useTransform(mx, (v) => v * -26);
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, 60]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.1]);
+  const hudY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const floorY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
 
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -166,49 +123,91 @@ const Hero = () => {
   const onLeave = () => { mx.set(0); my.set(0); };
 
   return (
-    <section ref={ref} className="hero hh" id="home" onMouseMove={onMove} onMouseLeave={onLeave}>
-      <div className="container hh-grid">
-        <div className="hh-left">
-          <motion.p className="hh-eyebrow" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
-            <span className="hh-index">(01)</span> Sabari Suresh — Full-Stack Developer
+    <section ref={ref} className="hero hd" id="home" onMouseMove={onMove} onMouseLeave={onLeave}>
+      {/* ---------- animated background ---------- */}
+      <motion.div className="hd-bg" style={{ x: bgX }} aria-hidden="true">
+        <span className="hd-aurora hd-aurora-a" />
+        <span className="hd-aurora hd-aurora-b" />
+        <motion.div className="hd-floor-wrap" style={{ y: floorY }}>
+          <div className="hd-floor" />
+        </motion.div>
+        <span className="hd-horizon" />
+      </motion.div>
+      <Specks />
+
+      <div className="container hd-grid">
+        {/* ---------- copy ---------- */}
+        <motion.div className="hd-copy" style={{ y: copyY, opacity: copyOpacity }}>
+          <motion.p className="hd-status" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+            <i /> System online · Available for work
           </motion.p>
 
-          <motion.h1 className="hh-title" style={{ x: headX, opacity: headOpacity }}>
-            <span className="hh-line"><Decode text="I build" delay={200} /></span>
-            <span className="hh-line"><CycleWord /></span>
-            <span className="hh-line"><Decode text="that scale." delay={700} /></span>
-          </motion.h1>
+          <h1 className="hd-name" aria-label="Sabari Suresh">
+            <GlitchWord text="SABARI" delay={0.2} />
+            <GlitchWord text="SURESH" delay={0.5} outline />
+          </h1>
 
-          <motion.p className="hh-lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.2 }}>
-            MEAN stack developer crafting fast, reliable software, from Angular interfaces to Node.js APIs and MongoDB data.
+          <Typed />
+
+          <motion.p className="hd-lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.1 }}>
+            {LEAD}
           </motion.p>
 
-          <motion.div className="hh-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.35 }}>
+          <motion.div className="hd-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.25 }}>
             <Magnetic strength={0.2}>
-              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hh-btn hh-btn-primary">
+              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hd-btn hd-btn-primary">
                 View Projects <ArrowUpRight size={19} />
               </Link>
             </Magnetic>
             <Magnetic strength={0.2}>
-              <a href={RESUME} target="_blank" rel="noreferrer" className="hh-btn hh-btn-outline">
+              <a href={RESUME} target="_blank" rel="noreferrer" className="hd-btn hd-btn-outline">
                 <Download size={18} /> Resume
               </a>
             </Magnetic>
           </motion.div>
-        </div>
+        </motion.div>
 
-        <motion.div className="hh-right" style={{ y: deckY }}>
-          <div className="hh-deck" onMouseEnter={() => setSpread(true)} onMouseLeave={() => setSpread(false)}>
-            <Portrait mx={mx} my={my} />
-            {CARDS.map((card, i) => (
-              <FloatCard key={card.id} card={card} index={i} mx={mx} my={my} spread={spread} entered={entered} />
-            ))}
-          </div>
-          <motion.div className="hh-badge-pos" initial={{ opacity: 0, scale: 0.4, rotate: -90 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 1, delay: 1.5, ease: EASE }}>
-            <Badge />
+        {/* ---------- HUD portrait ---------- */}
+        <motion.div className="hd-hud" style={{ y: hudY }}>
+          <Radar />
+          <motion.div
+            className="hd-frame-wrap"
+            style={{ rotateX: rx, rotateY: ry, transformPerspective: 1000 }}
+            initial={{ opacity: 0, scale: 0.75, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.1, delay: 0.4, ease: EASE }}
+          >
+            <i className="hd-corner hd-c1" /><i className="hd-corner hd-c2" /><i className="hd-corner hd-c3" /><i className="hd-corner hd-c4" />
+            <div className="hd-frame">
+              <motion.img
+                src={heroPhoto}
+                alt="Sabari Suresh"
+                style={{ x: innerX }}
+                initial={{ clipPath: 'inset(100% 0 0 0)' }}
+                animate={{ clipPath: 'inset(0% 0 0 0)' }}
+                transition={{ duration: 1.3, delay: 0.9, ease: EASE }}
+              />
+              <span className="hd-scan" />
+            </div>
+            <motion.span className="hd-tag hd-tag-a" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.6, duration: 0.6 }}>ID · SS-2025</motion.span>
+            <motion.span className="hd-tag hd-tag-b" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.8, duration: 0.6 }}><i /> ONLINE</motion.span>
+            <motion.span className="hd-tag hd-tag-c" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2, duration: 0.6 }}>KERALA · IN</motion.span>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* ---------- HUD stats ---------- */}
+      <motion.div className="container hd-stats" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.5 }}>
+        {STATS.map(({ icon: Icon, label, value, fill, plain }, i) => (
+          <div key={label} className="hd-stat">
+            <div className="hd-stat-top">
+              <Icon size={18} strokeWidth={1.7} /> <span>{label}</span>
+            </div>
+            <strong>{plain ? value : <Counter value={value} />}</strong>
+            <span className="hd-bar"><motion.i initial={{ scaleX: 0 }} animate={{ scaleX: fill }} transition={{ duration: 1.4, delay: 1.8 + i * 0.15, ease: EASE }} /></span>
+          </div>
+        ))}
+      </motion.div>
     </section>
   );
 };
