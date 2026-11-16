@@ -1,221 +1,194 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
-import { ArrowUpRight, Download, MapPin } from 'lucide-react';
-import { FaAngular, FaNodeJs } from 'react-icons/fa';
-import { SiMongodb, SiExpress, SiTypescript } from 'react-icons/si';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowDown, ArrowUpRight, Briefcase, Download, Layers } from 'lucide-react';
 import { Link } from 'react-scroll';
-import { Magnetic } from './Animations';
+import { Magnetic, Counter } from './Animations';
 import heroPhoto from '../assets/me-new.png';
 import './Hero.css';
 
 const EASE = [0.16, 1, 0.3, 1];
 const RESUME = 'https://drive.google.com/file/d/1FZVECtlgDd7GsdTKtOE5W6oslzuyePnT/view?usp=sharing';
+const WORDS = ['Web Apps', 'REST APIs', 'Dashboards', 'Products'];
 
-const LEAD = 'I build scalable, high-performance web apps with the MEAN stack and clean, tested code.';
-const HELLO = '// hello, world';
-const MARQUEE = ['Angular', 'Node.js', 'MongoDB', 'Express', 'TypeScript', 'REST APIs', 'SQL', 'Git & GitHub', 'Responsive UI'];
+/* one headline line slides up out of a mask */
+const MaskLine = ({ children, delay = 0 }) => (
+  <span className="hv-mask">
+    <motion.span
+      className="hv-mask-in"
+      initial={{ y: '110%', rotate: 4 }}
+      animate={{ y: 0, rotate: 0 }}
+      transition={{ duration: 1, delay, ease: EASE }}
+    >
+      {children}
+    </motion.span>
+  </span>
+);
 
-const TERMINAL = [
-  '$ ng build --prod',
-  '✔ compiled successfully',
-  '$ node server.js',
-  '✔ api listening on :3000',
-  '$ mongosh connect',
-  '✔ database connected',
-];
-
-const floaters = [
-  { icon: FaAngular, depth: 38, className: 'hs-float-a' },
-  { icon: FaNodeJs, depth: -30, className: 'hs-float-b' },
-  { icon: SiMongodb, depth: 22, className: 'hs-float-c' },
-  { icon: SiExpress, depth: -44, className: 'hs-float-d' },
-  { icon: SiTypescript, depth: 30, className: 'hs-float-e' },
-];
-
-/* "// hello, world" typed once with a blinking caret */
-function Hello() {
-  const [n, setN] = useState(0);
+/* slot-machine word: the old word rolls up, the next one rolls in */
+function Slot() {
+  const [i, setI] = useState(0);
   useEffect(() => {
-    const id = window.setInterval(() => setN((v) => (v < HELLO.length ? v + 1 : v)), 70);
+    const id = window.setInterval(() => setI((v) => (v + 1) % WORDS.length), 2300);
     return () => window.clearInterval(id);
   }, []);
-  return <p className="hs-hello">{HELLO.slice(0, n)}<i className="hs-caret" /></p>;
-}
-
-/* every letter flips up out of the dark, one after another */
-function FlipName({ text, delay }) {
   return (
-    <span className="hs-line" aria-hidden="true">
-      {text.split('').map((ch, i) => (
-        <span key={i} className="hs-letter-box">
-          <motion.span
-            className="hs-letter"
-            initial={{ rotateX: -95, y: '60%', opacity: 0 }}
-            animate={{ rotateX: 0, y: 0, opacity: 1 }}
-            transition={{ duration: 0.9, delay: delay + i * 0.07, ease: EASE }}
-            style={{ transformOrigin: '50% 100%' }}
-          >
-            <span className="hs-letter-in" style={{ animationDelay: `${2 + i * 0.12}s` }}>{ch}</span>
-          </motion.span>
-        </span>
-      ))}
+    <span className="hv-slot" aria-label={WORDS.join(', ')}>
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={WORDS[i]}
+          className="hv-slot-word"
+          initial={{ y: '105%', rotateX: -60, opacity: 0 }}
+          animate={{ y: '0%', rotateX: 0, opacity: 1 }}
+          exit={{ y: '-105%', rotateX: 60, opacity: 0 }}
+          transition={{ duration: 0.6, ease: EASE }}
+        >
+          {WORDS[i]}
+        </motion.span>
+      </AnimatePresence>
     </span>
   );
 }
 
-/* words fade up one by one */
-function Words({ text, delay }) {
-  return (
-    <p className="hs-lead">
-      {text.split(' ').map((w, i) => (
-        <motion.span
-          key={i}
-          className="hs-word"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: delay + i * 0.045, ease: EASE }}
-        >
-          {w}&nbsp;
-        </motion.span>
-      ))}
-    </p>
-  );
-}
+/* circular text that keeps turning */
+const Badge = () => (
+  <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hv-badge" aria-label="Scroll to projects">
+    <svg viewBox="0 0 120 120" className="hv-badge-ring" aria-hidden="true">
+      <defs><path id="hv-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" /></defs>
+      <text><textPath href="#hv-circle" textLength="283" lengthAdjust="spacing">SABARI SURESH • FULL-STACK DEV • </textPath></text>
+    </svg>
+    <ArrowDown size={26} className="hv-badge-arrow" />
+  </Link>
+);
 
-/* a tiny terminal that types commands, then starts over */
-function Terminal() {
-  const full = TERMINAL.join('\n');
-  const [n, setN] = useState(0);
+/* the three cards of the deck */
+const CARDS = [
+  {
+    id: 'photo',
+    body: (
+      <>
+        <span className="hv-tag">Hello</span>
+        <img src={heroPhoto} alt="Sabari Suresh" className="hv-photo" />
+        <strong className="hv-cap">Sabari Suresh</strong>
+      </>
+    ),
+  },
+  {
+    id: 'stats',
+    body: (
+      <>
+        <span className="hv-tag"><Layers size={14} /> In numbers</span>
+        <p className="hv-big"><Counter value="10+" /></p>
+        <p className="hv-sub">projects built with Angular, Node.js &amp; MongoDB</p>
+        <p className="hv-small">MEAN stack · SQL · REST</p>
+      </>
+    ),
+  },
+  {
+    id: 'work',
+    body: (
+      <>
+        <span className="hv-tag"><Briefcase size={14} /> Internship</span>
+        <p className="hv-company">Inmakes Infotech Pvt. Ltd</p>
+        <p className="hv-sub">10 Feb 2025 – 10 May 2025</p>
+        <p className="hv-small">3 months · full-stack development</p>
+      </>
+    ),
+  },
+];
+
+/* positions in the deck: 0 = front */
+const POSE = [
+  { x: 0, y: 0, rotate: -3, scale: 1 },
+  { x: 26, y: -16, rotate: 6, scale: 0.95 },
+  { x: -22, y: -30, rotate: -9, scale: 0.9 },
+];
+
+function Deck() {
+  const [order, setOrder] = useState([0, 1, 2]);
+  const [paused, setPaused] = useState(false);
+  const next = () => setOrder((o) => [...o.slice(1), o[0]]);
+
   useEffect(() => {
-    let timer = 0;
-    let count = 0;
-    const tick = () => {
-      count = count > full.length + 40 ? 0 : count + 1;
-      setN(Math.min(count, full.length));
-      timer = window.setTimeout(tick, count >= full.length ? 60 : full[count] === '\n' ? 420 : 45);
-    };
-    timer = window.setTimeout(tick, 1800);
-    return () => window.clearTimeout(timer);
-  }, [full]);
-  const lines = full.slice(0, n).split('\n');
+    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const id = window.setInterval(next, 4200);
+    return () => window.clearInterval(id);
+  }, [paused]);
+
   return (
-    <div className="hs-term" aria-hidden="true">
-      <div className="hs-term-dots"><i /><i /><i /></div>
-      <pre>
-        {lines.map((l, i) => (
-          <span key={i} className={l.startsWith('✔') ? 'ok' : ''}>{l}{i === lines.length - 1 && <i className="hs-caret" />}{'\n'}</span>
-        ))}
-      </pre>
+    <div className="hv-deck" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      {CARDS.map((card, id) => {
+        const pos = order.indexOf(id);
+        return (
+          <motion.button
+            key={card.id}
+            type="button"
+            className={`hv-card hv-card-${card.id}`}
+            style={{ zIndex: 10 - pos }}
+            initial={{ opacity: 0, y: 120, rotate: 12 }}
+            animate={{ ...POSE[pos], opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 140, damping: 18, delay: pos === 0 && order[0] === 0 ? 0 : 0 }}
+            whileHover={pos === 0 ? { y: -8, rotate: -1 } : undefined}
+            onClick={next}
+            aria-label={pos === 0 ? 'Show next card' : undefined}
+            tabIndex={pos === 0 ? 0 : -1}
+          >
+            {card.body}
+          </motion.button>
+        );
+      })}
+      <p className="hv-hint">Click the card to shuffle</p>
     </div>
   );
 }
 
 const Hero = () => {
   const ref = useRef(null);
-  const mx = useSpring(useMotionValue(0), { stiffness: 110, damping: 16 });
-  const my = useSpring(useMotionValue(0), { stiffness: 110, damping: 16 });
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-
-  const rotY = useTransform(mx, (v) => v * 16);
-  const rotX = useTransform(my, (v) => v * -12);
-  const cardY = useTransform(scrollYProgress, [0, 1], [0, -70]);
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, 50]);
-  const copyOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.2]);
-
-  const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - 0.5;
-    const py = (e.clientY - r.top) / r.height - 0.5;
-    mx.set(px);
-    my.set(py);
-    const card = ref.current.querySelector('.hs-card');
-    if (card) {
-      card.style.setProperty('--gx', `${(px + 0.5) * 100}%`);
-      card.style.setProperty('--gy', `${(py + 0.5) * 100}%`);
-    }
-  };
-  const onLeave = () => { mx.set(0); my.set(0); };
+  const headX = useTransform(scrollYProgress, [0, 1], ['0vw', '-12vw']);
+  const headOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const deckY = useTransform(scrollYProgress, [0, 1], [0, -90]);
 
   return (
-    <section ref={ref} className="hero hs" id="home" onMouseMove={onMove} onMouseLeave={onLeave}>
-      <div className="container hs-grid">
-        <motion.div className="hs-copy" style={{ y: copyY, opacity: copyOpacity }}>
-          <Hello />
-          <h1 className="hs-name" aria-label="Sabari Suresh">
-            <FlipName text="SABARI" delay={0.2} />
-            <FlipName text="SURESH" delay={0.5} />
-          </h1>
-          <p className="hs-role">Full-Stack Developer · MEAN Stack</p>
-          <Words text={LEAD} delay={1} />
+    <section ref={ref} className="hero hv" id="home">
+      <div className="container hv-grid">
+        <div className="hv-left">
+          <motion.p className="hv-eyebrow" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+            <span className="hv-index">(01)</span> Sabari Suresh — Full-Stack Developer
+          </motion.p>
 
-          <motion.div className="hs-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.5, ease: EASE }}>
+          <motion.h1 className="hv-title" style={{ x: headX, opacity: headOpacity }}>
+            <MaskLine delay={0.2}>I build</MaskLine>
+            <MaskLine delay={0.35}><Slot /></MaskLine>
+            <MaskLine delay={0.5}>that scale.</MaskLine>
+          </motion.h1>
+
+          <motion.p className="hv-lead" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1 }}>
+            MEAN stack developer crafting fast, reliable software, from Angular interfaces to Node.js APIs and MongoDB data.
+          </motion.p>
+
+          <motion.div className="hv-cta" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 1.15 }}>
             <Magnetic strength={0.2}>
-              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hs-btn hs-btn-primary">
+              <Link to="projects" smooth="easeInOutQuart" duration={400} offset={-90} className="hv-btn hv-btn-primary">
                 View Projects <ArrowUpRight size={19} />
               </Link>
             </Magnetic>
             <Magnetic strength={0.2}>
-              <a href={RESUME} target="_blank" rel="noreferrer" className="hs-btn hs-btn-outline">
+              <a href={RESUME} target="_blank" rel="noreferrer" className="hv-btn hv-btn-outline">
                 <Download size={18} /> Resume
               </a>
             </Magnetic>
           </motion.div>
-        </motion.div>
-
-        <motion.div className="hs-stage" style={{ y: cardY }}>
-          <motion.div
-            className="hs-card"
-            style={{ rotateX: rotX, rotateY: rotY, transformPerspective: 1100 }}
-            initial={{ opacity: 0, rotateY: -50, y: 60 }}
-            animate={{ opacity: 1, rotateY: 0, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.4, ease: EASE }}
-          >
-            <span className="hs-glare" aria-hidden="true" />
-            <div className="hs-card-top">
-              <span className="hs-badge"><i /> Open to work</span>
-              <span className="hs-id">SS · 2025</span>
-            </div>
-            <img src={heroPhoto} alt="Sabari Suresh" className="hs-photo" />
-            <div className="hs-card-bottom">
-              <strong>Sabari Suresh</strong>
-              <span><MapPin size={14} /> Kerala, India</span>
-            </div>
-          </motion.div>
-
-          {floaters.map(({ icon: Icon, depth, className }, i) => (
-            <Floater key={className} mx={mx} my={my} depth={depth} className={className} delay={0.9 + i * 0.12}>
-              <Icon />
-            </Floater>
-          ))}
-
-          <motion.div className="hs-term-pos" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 1.3, ease: EASE }}>
-            <Terminal />
-          </motion.div>
-        </motion.div>
-      </div>
-
-      <div className="hs-marquee" aria-hidden="true">
-        <div className="hs-marquee-track">
-          {[0, 1].map((k) => (
-            <div key={k} className="hs-marquee-set">
-              {MARQUEE.map((m) => (<span key={m + k}>{m}<b>✦</b></span>))}
-            </div>
-          ))}
         </div>
+
+        <motion.div className="hv-right" style={{ y: deckY }}>
+          <Deck />
+          <motion.div className="hv-badge-pos" initial={{ opacity: 0, scale: 0.4, rotate: -90 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 1, delay: 1.2, ease: EASE }}>
+            <Badge />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
 };
-
-/* a chip that drifts with the pointer at its own depth */
-function Floater({ mx, my, depth, className, delay, children }) {
-  const x = useTransform(mx, (v) => v * depth);
-  const y = useTransform(my, (v) => v * depth * 0.7);
-  return (
-    <motion.span className={`hs-float ${className}`} style={{ x, y }} initial={{ opacity: 0, scale: 0.4 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay, ease: EASE }}>
-      <span className="hs-float-in">{children}</span>
-    </motion.span>
-  );
-}
 
 export default Hero;
