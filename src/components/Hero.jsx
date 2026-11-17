@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from './ScrollLink';
-import heroPhoto from '../assets/me-new.webp';
+import heroPhoto from '../assets/me-hero.webp';
 import './Hero.css';
 
 const EASE = [0.22, 1, 0.36, 1];
